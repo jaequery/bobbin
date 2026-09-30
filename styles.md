@@ -10,7 +10,7 @@ screenshots are all Bobbin's own.
 
 The reference was a Retina capture. It was measured in device pixels and divided
 by ~1.45 to get CSS pixels, then rounded. The tokens below are the source of
-truth, and `styles.css` implements them as custom properties on `:root`.
+truth, and `app/styles.css` implements them as custom properties on `:root`.
 
 ---
 
@@ -107,7 +107,7 @@ when its nav item or pill is active. Chevrons and clear buttons are 14px in
   (`aria-current="page"`) it takes the `--surface-2` fill, a `--line-2` border
   and an `--accent` icon.
 - **Badge** (`.badge`): 20px tall, 1.2px `--ink` border, 5px radius, 12px text,
-  placed inline after a nav label. It is defined in `styles.css` but v1 does not use it yet.
+  placed inline after a nav label. It is defined in `app/styles.css` but v1 does not use it yet.
 - **Footer** stack, pinned to the bottom: plain nav items, then an **outline
   button** (`.btn-outline`), 39px tall with a white fill, a `--line-2` border and
   `--r-md`.

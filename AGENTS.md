@@ -13,13 +13,23 @@ collections.
 
 ## Commands
 
-- Run: `python3 -m http.server 8000` (or `npx serve .`), then open `http://localhost:8000`.
-- There is no build, no dependencies and no test suite yet.
+- Install: `npm install`. Dev: `npm run dev` (http://localhost:3000). Build: `npm run build`, then `npm start`.
+- There is no test suite yet.
 
 ## Conventions
 
-- Plain HTML, CSS and JS with no framework or bundler. `data.js` loads before `app.js`, both as classic scripts.
-- Visual changes must follow `styles.md` and use the `:root` tokens in `styles.css`. Do not hard-code new colors or radii.
+- Next.js App Router, plain JS (no TypeScript). `app/page.jsx` holds the static shell; `app/Bobbin.jsx` calls `mount()` from `lib/bobbin.js`, which renders into that shell imperatively. `mount()` must stay re-runnable: dev StrictMode mounts, cleans up and mounts again, so every listener it adds takes its `signal`.
+- Visual changes must follow `styles.md` and use the `:root` tokens in `app/styles.css`. Do not hard-code new colors or radii.
 - `--accent` only colors the icon of an active item or pill. It never fills a surface.
-- Content must stay original: no real app names, logos or screenshots. Screens are procedural SVGs drawn in `app.js` (`screenSVG`).
+- Content must stay original: no real app names, logos or screenshots. Screens are procedural SVGs drawn in `lib/bobbin.js` (`screenSVG`).
 - All view state lives in the URL hash (`#/apps`, `#/screens`, `#/app/<id>` with query filters). Unknown routes and values fall back to the browse view.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
