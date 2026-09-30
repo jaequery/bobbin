@@ -7,21 +7,23 @@ saved. All apps and screenshots are original placeholders.
 
 ## Run it
 
-This is a static site with no build step.
+Bobbin is a Next.js app (App Router). Node 20.9 or newer.
 
 ```sh
-python3 -m http.server 8000   # or: npx serve .
+npm install
+npm run dev                  # http://localhost:3000
+npm run build && npm start   # production build
 ```
-
-Then open <http://localhost:8000>.
 
 ## Files
 
-- `index.html`: the page shell
-- `styles.css`: design tokens and components
+- `app/layout.jsx`: the document, metadata and font
+- `app/page.jsx`: the page shell
+- `app/Bobbin.jsx`: client component that mounts the renderer
+- `app/styles.css`: design tokens and components
 - `styles.md`: the style guide those tokens come from
-- `data.js`: the sample library (apps, screens, patterns, industries)
-- `app.js`: hash routing, search and filters, rendering, the lightbox, and the procedural SVG screenshots
+- `lib/data.js`: the sample library (apps, screens, patterns, industries)
+- `lib/bobbin.js`: hash routing, search and filters, rendering, the lightbox, and the procedural SVG screenshots
 
 ## URLs
 
