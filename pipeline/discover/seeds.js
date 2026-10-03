@@ -5,7 +5,11 @@ import { readFileSync } from "node:fs";
 export const name = "manual";
 
 export function readSeedFile(file) {
-  return readFileSync(file, "utf8")
+  return parseSeedText(readFileSync(file, "utf8"));
+}
+
+export function parseSeedText(text) {
+  return String(text)
     .split(/\r?\n/)
     .map((line) => line.replace(/#.*/, "").trim())
     .filter(Boolean);

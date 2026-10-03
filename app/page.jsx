@@ -35,8 +35,32 @@ export default function Page() {
       <dialog id="about">
         <h2>About Bobbin</h2>
         <p>Bobbin is an open library of real, well-designed websites from around the world. Browse by site, by page or by section, search, and filter by platform, page pattern, section type and industry.</p>
-        <p>Every screenshot links to the site it was captured from, and each site's name and logo belong to its owner. Site owners can ask for their site to be removed.</p>
+        <p>Every screenshot links to the site it was captured from, and each site's name and logo belong to its owner.</p>
+        <p>Own a site listed here? <button className="link" id="removal-open" type="button">Request removal</button></p>
         <form method="dialog"><button className="btn-primary">Got it</button></form>
+      </dialog>
+
+      <dialog id="removal" aria-labelledby="removal-title">
+        <h2 id="removal-title">Request removal</h2>
+        <p>Tell us which site is yours. It is hidden from Bobbin right away and never captured again.</p>
+        <form id="removal-form" noValidate>
+          <label className="field" data-field="domain">Your site's domain
+            <input name="domain" type="text" inputMode="url" autoComplete="url" placeholder="example.com" required maxLength={300} />
+            <small className="err" hidden></small>
+          </label>
+          <label className="field" data-field="email">Email
+            <input name="email" type="email" autoComplete="email" placeholder="you@example.com" required maxLength={254} />
+            <small className="err" hidden></small>
+          </label>
+          <label className="field" data-field="reason">Reason (optional)
+            <textarea name="reason" rows={3} maxLength={1000}></textarea>
+          </label>
+          <p className="form-status" id="removal-status" role="status"></p>
+          <div className="row">
+            <button className="btn-primary" type="submit">Send request</button>
+            <button className="btn-outline" type="button" id="removal-close">Close</button>
+          </div>
+        </form>
       </dialog>
 
       <Bobbin />

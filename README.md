@@ -192,10 +192,52 @@ sites, so a fresh capture can be browsed without an API key.
 | `GET /api/sites/<id>` | one site with its pages, screens and sections (404 unless public) |
 | `GET /api/screens?…same filters…&cursor&limit=36` | page screenshots |
 | `GET /api/sections?type&…same filters…&cursor&limit=36` | section crops |
-| `GET /shots/<siteId>/<file>.webp` | a captured image of a public site, cached as immutable |
+| `GET /shots/<siteId>/<file>.webp` | a captured image of a public site, cached as immutable (any site for the admin, uncached) |
 
 Lists answer `{ data: { items, total, next } }`; pass `next` back as `cursor`
 for the following page. Unknown filter values are ignored.
+
+## Curate locally (admin)
+
+`BOBBIN_ADMIN=1 npm run dev`, then open http://localhost:3000/admin. The admin
+lists sites by status (Queue: captured, failed and in-flight; Discovered;
+Approved; Rejected) with home thumbnails, score and the judge's reasons. Per
+site you can approve or reject, edit name, tagline, industry and country, retag
+each page's pattern and each section's type, re-capture, re-judge (needs
+`ANTHROPIC_API_KEY`) or delete the site and its `data/shots/<id>/`. "Add seeds"
+takes URLs one per line, and "Removal requests" processes opt-outs.
+
+Re-capture and re-judge run as background jobs inside the server process, one
+at a time, and are lost on restart; the page polls `GET /api/admin/jobs`. A
+re-captured site keeps its approved or rejected status (its tags fall back to
+the capture engine's guesses until it is re-judged or retagged). A site a
+pipeline run holds (`queued`, `capturing`, `judging`) is refused as busy.
+
+The admin answers 404 unless **both** `BOBBIN_ADMIN=1` is set and the request
+comes over loopback: the socket address (stamped by `next.config.mjs`, so a
+client-sent `X-Forwarded-For` cannot fake it), the `Host` header and any
+`Origin` must be `localhost`, `127.0.0.1` or `::1`. Never set `BOBBIN_ADMIN` on
+a hosted deployment; the guard is the only protection, there are no accounts.
+
+| Route | Does |
+| --- | --- |
+| `GET /api/admin/sites?tab=queue\|discovered\|approved\|rejected&q` | sites in a tab, plus per-tab counts |
+| `GET/PATCH/DELETE /api/admin/sites/<id>` | one site with pages, screens, sections and events / edit (`name`, `tagline`, `industry`, `country`, `status`, `pages: [{id, pattern}]`, `sections: [{id, type}]`, enums checked against `lib/taxonomy.js`) / delete |
+| `POST /api/admin/sites/<id>/recapture`, `…/rejudge` | queue a job (409 when busy) |
+| `GET /api/admin/jobs` | recent jobs and their state |
+| `POST /api/admin/seeds` | `{ urls }`, one per line, added as `discovered` |
+| `GET/PATCH /api/admin/optouts` | removal requests / `{ domain, status: "approved" \| "dismissed" }` |
+
+## Removal requests
+
+"Request removal" in the About dialog posts `{ domain, email, reason }` to
+`POST /api/removal` (5 posts per hour per IP, in memory). The domain (any URL
+or host, reduced to its registrable domain) is stored in `optouts` as
+`pending`: it vanishes from every public API and image at once, and discovery,
+seeding and capture refuse it. The answer is the same whether or not the
+domain is in the library. In the admin, **Approve removal** deletes the site's
+rows and images and keeps blocking the domain; **Dismiss** lets it back into
+the library and the pipeline. A new request for a dismissed domain reopens it.
 
 ## Files
 
@@ -217,6 +259,9 @@ for the following page. Unknown filter values are ignored.
 - `pipeline/*.js`: the capture engine (browser, page prep, robots/opt-out checks, sections, subpage links); `scripts/capture.js` is its CLI
 - `pipeline/judge/`: the Claude vision judge and tagger (rubric, image prep, output schema); `scripts/judge.js` is its CLI
 - `pipeline/run.js`: the orchestrator (claims, resume, AI budget, logging); `scripts/pipeline.js` and `scripts/pipeline-status.js` are its CLIs
+- `app/admin/`, `app/api/admin/**`: the local admin; `lib/admin.js` (loopback + env guard), `lib/admin-data.js` (its queries and actions), `lib/jobs.js` (in-process job queue)
+- `app/api/removal/route.js`: public removal requests
+- `next.config.mjs`: stamps each request with its real socket address for the admin guard and the rate limit
 - `lib/bobbin.js`: hash routing, search and filters, fetching from the API, infinite scroll, rendering and the lightbox
 
 ## URLs
