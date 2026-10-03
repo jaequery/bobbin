@@ -13,7 +13,7 @@ collections.
 
 ## Commands
 
-- Install: `npm install`. Dev: `npm run dev` (http://localhost:3000). Build: `npm run build`, then `npm start`.
+- Install: `npm install`. Database: `npm run db:migrate`. Dev: `npm run dev` (http://localhost:3000). Build: `npm run build`, then `npm start`.
 - There is no test suite yet.
 
 ## Conventions
@@ -21,7 +21,9 @@ collections.
 - Next.js App Router, plain JS (no TypeScript). `app/page.jsx` holds the static shell; `app/Bobbin.jsx` calls `mount()` from `lib/bobbin.js`, which renders into that shell imperatively. `mount()` must stay re-runnable: dev StrictMode mounts, cleans up and mounts again, so every listener it adds takes its `signal`.
 - Visual changes must follow `styles.md` and use the `:root` tokens in `app/styles.css`. Do not hard-code new colors or radii.
 - `--accent` only colors the icon of an active item or pill. It never fills a surface.
-- Content must stay original: no real app names, logos or screenshots. Screens are procedural SVGs drawn in `lib/bobbin.js` (`screenSVG`).
+- Content is real websites captured by the pipeline. Guardrails: honor robots.txt, always show and link the source domain, never present a captured site's logo as Bobbin's own asset, and never capture or show an opted-out domain (`optouts` table). Placeholder SVG screens are gone; do not reintroduce fake apps.
+- Data lives in a local SQLite database (`data/bobbin.db`, overridable with `BOBBIN_DATA_DIR`). Create or upgrade it with `npm run db:migrate`; schema changes are new numbered files in `db/migrations/`. Read and write it only through `lib/db.js`, and never import that module from client code (`app/Bobbin.jsx`, `lib/bobbin.js`).
+- `lib/taxonomy.js` is the single source of platforms, page patterns, section types, industries and site statuses. Import from it; do not hard-code those lists.
 - All view state lives in the URL hash (`#/apps`, `#/screens`, `#/app/<id>` with query filters). Unknown routes and values fall back to the browse view.
 
 <!-- BEGIN:nextjs-agent-rules -->
