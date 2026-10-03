@@ -26,12 +26,22 @@ export const VIEWPORTS = {
 let launching = null;
 let headed = false;
 
+let ownSignals = false;
+
 export function setHeaded(value) {
   headed = !!value;
 }
 
+// By default Playwright closes the browser on Ctrl-C. A caller that handles
+// SIGINT/SIGTERM itself (to finish in-flight work) turns that off and must
+// call closeBrowser() before exiting.
+export function setOwnSignals(value) {
+  ownSignals = !!value;
+}
+
 export function getBrowser() {
-  launching ??= chromium.launch({ headless: !headed }).catch((err) => {
+  const signals = ownSignals ? { handleSIGINT: false, handleSIGTERM: false, handleSIGHUP: false } : {};
+  launching ??= chromium.launch({ headless: !headed, ...signals }).catch((err) => {
     launching = null;
     throw err;
   });
