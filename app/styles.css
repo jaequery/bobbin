@@ -106,6 +106,23 @@ svg.i { width: 20px; height: 20px; flex: none; stroke: currentColor; fill: none;
 .search .clear-q[hidden] { display: none; }
 .search .kbd { color: var(--faint); }
 
+/* Suggestions under the search bar: a popover like .menu. */
+.search-wrap { position: relative; }
+.suggest {
+  position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 30;
+  max-height: min(420px, 70vh); overflow-y: auto; padding: 6px;
+  background: var(--bg); border: 1px solid var(--line); border-radius: var(--r-lg);
+  box-shadow: var(--shadow-pop);
+}
+.suggest[hidden] { display: none; }
+.sug { display: flex; align-items: center; gap: 12px; padding: 7px 10px; border-radius: var(--r-sm); cursor: pointer; }
+.sug:hover, .sug[aria-selected="true"] { background: var(--surface); }
+.sug[aria-selected="true"] svg.i { stroke: var(--accent); }
+.sug-ic { display: grid; place-items: center; width: 32px; height: 32px; border-radius: var(--r-sm); background: var(--surface-2); flex: none; }
+.sug-text { display: flex; flex-direction: column; min-width: 0; }
+.sug-text b { font-weight: 500; font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sug-text small { color: var(--mute); font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
 .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 8px; }
 .pill {
   position: relative;
@@ -141,6 +158,11 @@ svg.i { width: 20px; height: 20px; flex: none; stroke: currentColor; fill: none;
 .menu button:hover, .menu button:focus-visible { background: var(--surface); outline: 0; }
 .menu button[aria-checked="true"] { background: var(--surface-2); }
 .menu small { color: var(--faint); font-size: 12.5px; }
+.menu .lbl { display: inline-flex; align-items: center; gap: 8px; }
+.menu-group { padding: 10px 10px 4px; color: var(--faint); font-size: 12.5px; }
+/* Color dot: the fill is the bucket's color (data); the ring keeps white visible. */
+.swatch { flex: none; width: 14px; height: 14px; border-radius: var(--r-pill); box-shadow: inset 0 0 0 1px var(--line-2); }
+.pill .swatch { width: 16px; height: 16px; }
 
 .view { margin-top: 30px; }
 
