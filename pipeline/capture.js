@@ -279,7 +279,8 @@ const isSkip = (err) => err.code === "optout" || err.code === "robots_disallowed
 // Returns { pages, screens, sections, links } or throws after recording the failure.
 export async function captureHome(siteOrId) {
   const site = typeof siteOrId === "string" ? getSite(siteOrId) : getSite(siteOrId.id) ?? siteOrId;
-  const previousStatus = site.status;
+  // A site the pipeline claimed (queued) goes back to discovered on a retryable failure.
+  const previousStatus = site.status === "queued" ? "discovered" : site.status;
   if (isOptedOut(site.domain)) {
     const err = new OptedOut(site.domain);
     recordSkip(site, err);
