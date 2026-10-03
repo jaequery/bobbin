@@ -3,7 +3,7 @@
 A public design-inspiration library of real, well-designed websites. A local
 pipeline discovers sites, captures them at desktop and mobile widths, and
 publishes the ones that pass a quality gate. Visitors browse sites and their
-screens, search, and filter by platform, page pattern and industry. There is no
+screens, search, and filter by platform, page pattern, industry, color, theme and country. There is no
 sign-in and nothing is saved.
 
 Every captured site is shown with a link to its source domain. The pipeline
@@ -187,15 +187,33 @@ sites, so a fresh capture can be browsed without an API key.
 
 | Route | Returns |
 | --- | --- |
-| `GET /api/library/meta` | the taxonomy with public counts per platform, pattern, section type and industry |
-| `GET /api/sites?q&platform&pattern&section&industry&cursor&limit=24` | sites with a desktop and a mobile cover screen |
+| `GET /api/library/meta` | the taxonomy with public counts per platform, pattern, section type, industry, color and theme, plus the countries that have public sites (with their region) |
+| `GET /api/sites?q&platform&pattern&section&industry&color&theme&country&cursor&limit=24` | sites with a desktop and a mobile cover screen |
 | `GET /api/sites/<id>` | one site with its pages, screens and sections (404 unless public) |
 | `GET /api/screens?…same filters…&cursor&limit=36` | page screenshots |
 | `GET /api/sections?type&…same filters…&cursor&limit=36` | section crops |
+| `GET /api/suggest?q` | up to 8 suggestions for the search box: page patterns, section types, industries, then sites |
 | `GET /shots/<siteId>/<file>.webp` | a captured image of a public site, cached as immutable (any site for the admin, uncached) |
 
 Lists answer `{ data: { items, total, next } }`; pass `next` back as `cursor`
 for the following page. Unknown filter values are ignored.
+
+`q` searches a SQLite FTS5 index (`search_idx`, one row per page) with every
+word as a prefix, ranked by bm25 with site name and domain weighted highest.
+One-character and CJK queries fall back to substring matching. The capture
+engine, judge and tagger keep the index current; `npm run search:reindex`
+rebuilds it, and the server rebuilds it once by itself when it holds fewer rows
+than there are pages. A screen's `color` (red, orange, yellow, green, teal,
+blue, purple, pink, brown, black, white or gray) and `theme` (light or dark)
+come from its dominant color and palette (`lib/color.js`); capture sets them,
+and `npm run color:backfill` fills screens captured before they existed.
+`country` is an ISO 3166-1 alpha-2 code from the judge.
+
+```sh
+npm run db:migrate        # adds the search index and color columns
+npm run color:backfill    # -- --all recomputes every screen
+npm run search:reindex
+```
 
 ## Curate locally (admin)
 
@@ -250,7 +268,10 @@ the library and the pipeline. A new request for a dismissed domain reopens it.
 - `lib/queries.js`: the public browse queries (filters, keyset pagination, public-site rule) behind the API (server only)
 - `lib/api.js`: request parsing and JSON responses shared by the route handlers
 - `app/api/**/route.js`, `app/shots/[...path]/route.js`: the browse API and the image server
-- `lib/taxonomy.js`: platforms, page patterns, section types, industries and site statuses
+- `lib/taxonomy.js`: platforms, page patterns, section types, industries, color buckets, themes and site statuses
+- `lib/search.js`: the full-text index (reindexing and safe FTS5 queries); `scripts/search-reindex.js` is its CLI
+- `lib/color.js`: color bucket and theme rules; `scripts/color-backfill.js` applies them to stored screens
+- `lib/regions.js`: country codes grouped by region for the Country filter
 - `db/migrations/*.sql`: the schema, applied in order by `scripts/db-migrate.js`
 - `pipeline/discover/`: discovery adapters (`galleries/`, `search.js`, `seeds.js`), URL normalization and polite fetching
 - `scripts/discover.js`, `scripts/seed.js`: the discovery CLIs
@@ -268,4 +289,6 @@ the library and the pipeline. A new request for a dismissed domain reopens it.
 
 State lives in the hash, so every view can be shared:
 `#/apps` (sites), `#/screens`, `#/sections`, `#/app/<id>` (one site), plus
-`?q=&platform=&pattern=&section=&industry=`. `platform` is `desktop` or `mobile`.
+`?q=&platform=&pattern=&section=&industry=&color=&theme=&country=`. `platform`
+is `desktop` or `mobile`, `color` a color bucket, `theme` `light` or `dark` and
+`country` a two-letter code such as `JP`.

@@ -12,7 +12,9 @@
     "capture": "node scripts/capture.js",
     "judge": "node scripts/judge.js",
     "pipeline": "node scripts/pipeline.js",
-    "pipeline:status": "node scripts/pipeline-status.js"
+    "pipeline:status": "node scripts/pipeline-status.js",
+    "search:reindex": "node scripts/search-reindex.js",
+    "color:backfill": "node scripts/color-backfill.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.131.0",

@@ -4,6 +4,7 @@
 // section type. Both write through lib/db.js and log token usage as events.
 import Anthropic from "@anthropic-ai/sdk";
 import { db, getSite, getSiteByDomain, recordEvent, upsertSite } from "../../lib/db.js";
+import { reindexSite } from "../../lib/search.js";
 import { imageBlock } from "./images.js";
 import { JUDGE_SYSTEM, TAG_SYSTEM, judgeUserText } from "./prompt.js";
 import { JUDGE_SCHEMA, SchemaError, TAG_SCHEMA, validateJudgement, validateTags } from "./schema.js";
@@ -172,6 +173,7 @@ export async function judgeSite(siteOrId, { dryRun = false } = {}) {
       industry: judgement.industry, country: judgement.country, language: judgement.language,
     });
   }
+  reindexSite(site.id);
   recordEvent(site.id, "judged", {
     status, quality: judgement.quality, capture_ok: judgement.capture_ok,
     ...(judgement.capture_ok ? {} : { capture_problem: judgement.capture_problem }),
@@ -234,6 +236,7 @@ export async function tagSite(siteOrId, { dryRun = false } = {}) {
   }
 
   const cost = costOf(usage);
+  if (!dryRun) reindexSite(site.id);
   if (!dryRun) recordEvent(site.id, "tagged", { pages: result.length, sections: result.reduce((n, p) => n + Object.keys(p.sections).length, 0), model: judgeModel(), usage, cost });
   return { pages: result, usage, cost };
 }

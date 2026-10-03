@@ -19,12 +19,16 @@ export default function Page() {
         </aside>
 
         <main className="main">
-          <label className="search">
-            <span className="sr-only">Search sites, pages or sections</span>
-            <input id="q" type="search" autoComplete="off" placeholder="Search sites, pages or sections — try “Pricing”" />
-            <button className="clear-q" id="clear-q" type="button" aria-label="Clear search" hidden></button>
-            <span className="kbd" id="search-icon" aria-hidden="true"></span>
-          </label>
+          <div className="search-wrap">
+            <label className="search">
+              <span className="sr-only">Search sites, pages or sections</span>
+              <input id="q" type="search" autoComplete="off" placeholder="Search sites, pages or sections — try “Pricing”"
+                role="combobox" aria-autocomplete="list" aria-controls="suggest" aria-expanded="false" />
+              <button className="clear-q" id="clear-q" type="button" aria-label="Clear search" hidden></button>
+              <span className="kbd" id="search-icon" aria-hidden="true"></span>
+            </label>
+            <div className="suggest" id="suggest" role="listbox" aria-label="Suggestions" hidden></div>
+          </div>
           <div className="toolbar" id="toolbar"></div>
           <section className="view" id="view" aria-live="polite"></section>
         </main>
@@ -34,7 +38,7 @@ export default function Page() {
 
       <dialog id="about">
         <h2>About Bobbin</h2>
-        <p>Bobbin is an open library of real, well-designed websites from around the world. Browse by site, by page or by section, search, and filter by platform, page pattern, section type and industry.</p>
+        <p>Bobbin is an open library of real, well-designed websites from around the world. Browse by site, by page or by section, search, and filter by platform, page pattern, section type, industry, color, light or dark theme and country.</p>
         <p>Every screenshot links to the site it was captured from, and each site's name and logo belong to its owner.</p>
         <p>Own a site listed here? <button className="link" id="removal-open" type="button">Request removal</button></p>
         <form method="dialog"><button className="btn-primary">Got it</button></form>

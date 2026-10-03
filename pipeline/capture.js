@@ -12,6 +12,8 @@ import {
   dataDir, db, deletePage, deleteScreensForPage, getSite, insertPage, insertScreen, insertSection,
   isOptedOut, listPages, recordEvent, upsertSite,
 } from "../lib/db.js";
+import { colorTags } from "../lib/color.js";
+import { reindexSite } from "../lib/search.js";
 import { PLATFORMS } from "../lib/taxonomy.js";
 import { closeBrowser, newContext, VIEWPORTS } from "./browser.js";
 import { MAX_HEIGHT, preparePage } from "./prepare.js";
@@ -195,7 +197,7 @@ async function writeScreen(site, slug, platform, shot) {
     screen: {
       platform, width: fullInfo.width, height: fullInfo.height,
       fullPath: `${base}-full.webp`, lgPath: `${base}-lg.webp`, smPath: `${base}-sm.webp`,
-      dominant: colors.dominant, palette: colors.palette,
+      dominant: colors.dominant, palette: colors.palette, ...colorTags(colors.dominant, colors.palette),
     },
     sections,
     colors,
@@ -226,6 +228,7 @@ async function capturePage(site, { url, path: pagePath, pattern }, { wantLinks =
     }
     return { stale, page };
   })();
+  reindexSite(site.id);
 
   // Old files this capture did not overwrite.
   const fresh = new Set(PLATFORMS.flatMap(({ id }) => [
@@ -347,5 +350,6 @@ export async function captureSubpages(siteOrId, { max = 8, links } = {}) {
     const stale = deletePage(page.id);
     await Promise.all(stale.map((p) => rm(path.join(shotsDir, p), { force: true })));
   }
+  reindexSite(site.id);
   return totals;
 }

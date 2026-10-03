@@ -10,6 +10,7 @@ import {
   claimSite, dataDir, deletePage, getSite, isOptedOut, listPages, moveSite, queueCounts, recordEvent,
   requeueFailed, requeueOldCaptures, resetStaleClaims, setSiteStatus, statusCounts,
 } from "../lib/db.js";
+import { reindexSite } from "../lib/search.js";
 import { captureHome, captureSubpages, closeBrowser, shotsDir } from "./capture.js";
 import { discover } from "./discover/index.js";
 import { judgeSite, tagSite } from "./judge/index.js";
@@ -273,6 +274,7 @@ export async function runPipeline(options = {}, { signal } = {}) {
       await Promise.all(paths.map((p) => rm(path.join(shotsDir, p), { force: true })));
     }
     await rm(path.join(shotsDir, siteId), { recursive: true, force: true });
+    reindexSite(siteId);
     say(i, domain, "pruned rejected screenshots", null, { event: "pruned" });
   }
 
