@@ -8,8 +8,9 @@ sign-in and nothing is saved.
 
 Every captured site is shown with a link to its source domain. The pipeline
 honors robots.txt, never presents a site's logo as Bobbin's own, and skips any
-domain that has opted out. The browse UI still reads the placeholder library in
-`lib/data.js` until it is switched to the database.
+domain that has opted out. The browse UI reads the database through the route
+handlers below, and shows only `approved` sites whose domain is not in
+`optouts`.
 
 ## Run it
 
@@ -178,6 +179,24 @@ wakes. Save as `~/Library/LaunchAgents/com.bobbin.pipeline.plist`, then
 100 sites a night is a suggested starting point; pick the limit and schedule
 that suit your machine and AI budget.
 
+## Browse the library
+
+`npm run dev` serves the library from `data/bobbin.db` and `data/shots`. Before
+any site is judged, `BOBBIN_SHOW_UNJUDGED=1 npm run dev` also shows `captured`
+sites, so a fresh capture can be browsed without an API key.
+
+| Route | Returns |
+| --- | --- |
+| `GET /api/library/meta` | the taxonomy with public counts per platform, pattern, section type and industry |
+| `GET /api/sites?q&platform&pattern&section&industry&cursor&limit=24` | sites with a desktop and a mobile cover screen |
+| `GET /api/sites/<id>` | one site with its pages, screens and sections (404 unless public) |
+| `GET /api/screens?…same filters…&cursor&limit=36` | page screenshots |
+| `GET /api/sections?type&…same filters…&cursor&limit=36` | section crops |
+| `GET /shots/<siteId>/<file>.webp` | a captured image of a public site, cached as immutable |
+
+Lists answer `{ data: { items, total, next } }`; pass `next` back as `cursor`
+for the following page. Unknown filter values are ignored.
+
 ## Files
 
 - `app/layout.jsx`: the document, metadata and font
@@ -185,8 +204,10 @@ that suit your machine and AI budget.
 - `app/Bobbin.jsx`: client component that mounts the renderer
 - `app/styles.css`: design tokens and components
 - `styles.md`: the style guide those tokens come from
-- `lib/data.js`: the placeholder library the UI still reads (to be replaced by the database)
 - `lib/db.js`: the SQLite connection and query helpers (server only)
+- `lib/queries.js`: the public browse queries (filters, keyset pagination, public-site rule) behind the API (server only)
+- `lib/api.js`: request parsing and JSON responses shared by the route handlers
+- `app/api/**/route.js`, `app/shots/[...path]/route.js`: the browse API and the image server
 - `lib/taxonomy.js`: platforms, page patterns, section types, industries and site statuses
 - `db/migrations/*.sql`: the schema, applied in order by `scripts/db-migrate.js`
 - `pipeline/discover/`: discovery adapters (`galleries/`, `search.js`, `seeds.js`), URL normalization and polite fetching
@@ -196,9 +217,10 @@ that suit your machine and AI budget.
 - `pipeline/*.js`: the capture engine (browser, page prep, robots/opt-out checks, sections, subpage links); `scripts/capture.js` is its CLI
 - `pipeline/judge/`: the Claude vision judge and tagger (rubric, image prep, output schema); `scripts/judge.js` is its CLI
 - `pipeline/run.js`: the orchestrator (claims, resume, AI budget, logging); `scripts/pipeline.js` and `scripts/pipeline-status.js` are its CLIs
-- `lib/bobbin.js`: hash routing, search and filters, rendering, the lightbox, and the procedural SVG screenshots
+- `lib/bobbin.js`: hash routing, search and filters, fetching from the API, infinite scroll, rendering and the lightbox
 
 ## URLs
 
 State lives in the hash, so every view can be shared:
-`#/apps`, `#/screens`, `#/app/<id>`, plus `?q=&platform=&pattern=&industry=`.
+`#/apps` (sites), `#/screens`, `#/sections`, `#/app/<id>` (one site), plus
+`?q=&platform=&pattern=&section=&industry=`. `platform` is `desktop` or `mobile`.
