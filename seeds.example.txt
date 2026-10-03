@@ -1,0 +1,23 @@
+# Starting seed list for `npm run seed -- --file seeds.example.txt`.
+# One URL per line; blank lines and # comments are ignored.
+# `npm run discover -- --source seeds` reads seeds.txt if present, else this file.
+https://linear.app
+https://stripe.com
+https://vercel.com
+https://www.apple.com
+https://www.notion.com
+https://raycast.com
+https://arc.net
+https://www.framer.com
+https://www.teenage.engineering
+https://www.aesop.com
+https://www.headspace.com
+https://www.airbnb.com
+https://www.mercury.com
+https://www.loewe.com
+https://www.porsche.com
+https://www.nothing.tech
+https://www.muji.com
+https://www.spotify.design
+https://www.pentagram.com
+https://www.are.na
