@@ -25,6 +25,7 @@ collections.
 - Data lives in a local SQLite database (`data/bobbin.db`, overridable with `BOBBIN_DATA_DIR`). Create or upgrade it with `npm run db:migrate`; schema changes are new numbered files in `db/migrations/`. Read and write it only through `lib/db.js`, and never import that module from client code (`app/Bobbin.jsx`, `lib/bobbin.js`).
 - Plain `node scripts/*.js` does not read `.env`; a CLI that needs keys or `BOBBIN_DATA_DIR` from it must `import "./env.js"` before anything that imports `lib/db.js` (the data dir is fixed when `lib/db.js` loads).
 - `lib/taxonomy.js` is the single source of platforms, page patterns, section types, industries and site statuses. Import from it; do not hard-code those lists.
+- After changing `pipeline/prepare.js` or `pipeline/sections.js`, open the resulting `-lg.webp` images for a few real sites (e.g. stripe.com, notion.com, a `.de` news site): a clean exit proves nothing, because consent managers such as Transcend on notion.com mount inside shadow roots after scrolling and only show up in the picture.
 - All view state lives in the URL hash (`#/apps`, `#/screens`, `#/app/<id>` with query filters). Unknown routes and values fall back to the browse view.
 
 <!-- BEGIN:nextjs-agent-rules -->
