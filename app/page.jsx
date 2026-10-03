@@ -20,8 +20,8 @@ export default function Page() {
 
         <main className="main">
           <label className="search">
-            <span className="sr-only">Search apps or UI patterns</span>
-            <input id="q" type="search" autoComplete="off" placeholder="Search apps or patterns — try “Checkout”" />
+            <span className="sr-only">Search sites, pages or sections</span>
+            <input id="q" type="search" autoComplete="off" placeholder="Search sites, pages or sections — try “Pricing”" />
             <button className="clear-q" id="clear-q" type="button" aria-label="Clear search" hidden></button>
             <span className="kbd" id="search-icon" aria-hidden="true"></span>
           </label>
@@ -30,12 +30,12 @@ export default function Page() {
         </main>
       </div>
 
-      <div className="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Screen viewer"></div>
+      <div className="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Screenshot viewer"></div>
 
       <dialog id="about">
         <h2>About Bobbin</h2>
-        <p>Bobbin is an open library of app screens for product designers. Browse by app or by screen, search by app name or UI pattern, and filter by platform, pattern and industry.</p>
-        <p>Every app and screenshot here is an original placeholder.</p>
+        <p>Bobbin is an open library of real, well-designed websites from around the world. Browse by site, by page or by section, search, and filter by platform, page pattern, section type and industry.</p>
+        <p>Every screenshot links to the site it was captured from, and each site's name and logo belong to its owner. Site owners can ask for their site to be removed.</p>
         <form method="dialog"><button className="btn-primary">Got it</button></form>
       </dialog>
 

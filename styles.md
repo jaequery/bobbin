@@ -129,13 +129,15 @@ padding, 9px icon gap.
   `--shadow-pop`, anchored 6px below its pill. Items are 34px tall with a result
   count on the right.
 
-### App card
-- **Frame**: aspect ratio **511 / 314**, `--r-card`, gradient backdrop and
-  vignette.
-- **Web app**: one browser screenshot inset **5.9% left/right and 9.6%
-  top/bottom**, with `--r-sm` and a lifted shadow.
-- **iOS and Android apps**: up to three phone screenshots in the same inset,
-  full height, 4% apart, with `--r-md`.
+### Site card
+- **Frame**: aspect ratio **511 / 314**, `--r-card`, gradient backdrop (the
+  site's captured `tone_a`/`tone_b`) and vignette.
+- **Desktop cover**: the home page's 16:10 desktop screenshot, inset **5.9% left
+  and 9.6% top/bottom**, with `--r-sm` and a lifted shadow. Centred when the
+  site has no mobile screen.
+- **Mobile cover**: a 9:19.5 phone screenshot, 72% of the frame tall, inset 5.9%
+  right and 9.6% bottom so it overlaps the desktop cover, with `--r-md`. A
+  mobile-only site shows one phone at full inset height.
 - On hover the screenshot rises 4px and scales to 1.01 over 0.35s.
 - **Meta row**: a 45px `--ink` logo tile (`--r-md`, white initial, and a 6px dot
   in the app's color at bottom-right), then the name (20/500) over the tagline
@@ -144,18 +146,22 @@ padding, 9px icon gap.
 ### Screen tile
 The tile is aspect ratio 4/5 with a `--surface` fill, `--r-card` and 22px
 padding, and the screenshot is centred inside it. Phones fill the tile's height
-and web screens fill its width. The caption underneath shows a 24px logo, the
-app name (500) and the pattern (`--mute`).
+and desktop screens (16:10) fill its width. The caption underneath shows a 24px
+logo, the site name (500) and the pattern (`--mute`). **Section tiles** are
+16:10 with the crop fitted inside at its own aspect.
 
-### App detail
-A "← All apps" back link, then a 64px logo with a 30px title and a 16px tagline.
-Fact chips are 30px pills with a `--line` border and 13.5px text. Pattern pills
-filter the gallery.
+### Site detail
+A "← All sites" back link, then a 64px logo with a 30px title and a 16px tagline.
+Fact chips are 30px pills with a `--line` border and 13.5px text; the last one is
+the "Visit site ↗" link. A 13.5px `--mute` line credits the source domain and
+capture date. Desktop/Mobile pills switch platform and pattern pills filter the
+pages; a horizontally scrolling strip of section tiles follows.
 
 ### Lightbox
-A full-screen `--scrim` with a top bar showing the white logo tile, the app name
-and "pattern · platform · n of N", plus a round 40px close button. The screen is
-centred with round 40px prev/next buttons, which use a translucent white fill.
+A full-screen `--scrim` with a top bar showing the white logo tile, the site name
+and "pattern · path · platform · n of N", a link to the source page, plus a round
+40px close button. The full-page capture is centred in a scrollable frame (never
+scaled to fit) with round 40px prev/next buttons, which use a translucent white fill.
 The keyboard controls are Esc, ← and →, and Tab stays inside the viewer.
 
 ### Empty state

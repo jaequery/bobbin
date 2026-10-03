@@ -2,7 +2,7 @@ import "./styles.css";
 
 export const metadata = {
   title: "Bobbin — design inspiration library",
-  description: "Browse, search and filter real-world UI patterns across web, iOS and Android apps.",
+  description: "Browse, search and filter real, well-designed websites by page, section, platform and industry.",
 };
 
 export default function RootLayout({ children }) {
