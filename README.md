@@ -72,6 +72,32 @@ capped at 12000 css px), `-lg` and `-sm` top-of-page thumbnails, and
 `sections`. Opted-out domains and URLs disallowed by robots.txt are skipped and
 logged in `events`.
 
+## Judge and tag
+
+Claude vision decides which captured sites make it into Bobbin. Judging sends
+only the two home-page folds (the desktop and mobile `-lg` thumbnails) with the
+domain and page title, and gets back a 1–10 quality score with per-dimension
+scores and reasons, plus a name, an original tagline and description, an
+industry, a country and a language. A site scoring at least
+`BOBBIN_MIN_QUALITY` (default 7) becomes `approved`, anything lower `rejected`.
+A capture that does not show the real site (blank, error page, bot challenge,
+a cookie wall over most of the fold) becomes `failed` with
+`last_error='bad_capture'` so it can be captured again. Approved sites are then
+tagged: each page gets a page pattern and every section crop a section type,
+from `lib/taxonomy.js`.
+
+```sh
+npm run judge -- stripe.com                    # judge one site (id or domain), tag it if approved
+npm run judge -- --dry-run stripe.com          # print the judgement as JSON, write nothing
+npm run judge -- --all-captured --limit 15     # every site with status 'captured'
+npm run judge -- --retag <siteId|domain>       # re-run tagging only
+```
+
+Needs `ANTHROPIC_API_KEY`; without it the CLI exits 1. `BOBBIN_JUDGE_MODEL`
+picks the model (default `claude-sonnet-5-5`). Token use and an estimated cost
+are printed as it runs and logged in `events`. To re-judge a site, set its
+status back to `captured`.
+
 ## Files
 
 - `app/layout.jsx`: the document, metadata and font
@@ -88,6 +114,7 @@ logged in `events`.
 - `seeds.example.txt`: a starter list of well-designed sites
 - `data/`: the local database and captures (git-ignored; `BOBBIN_DATA_DIR` moves it)
 - `pipeline/*.js`: the capture engine (browser, page prep, robots/opt-out checks, sections, subpage links); `scripts/capture.js` is its CLI
+- `pipeline/judge/`: the Claude vision judge and tagger (rubric, image prep, output schema); `scripts/judge.js` is its CLI
 - `lib/bobbin.js`: hash routing, search and filters, rendering, the lightbox, and the procedural SVG screenshots
 
 ## URLs

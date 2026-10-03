@@ -9,9 +9,11 @@
     "db:migrate": "node scripts/db-migrate.js",
     "discover": "node scripts/discover.js",
     "seed": "node scripts/seed.js",
-    "capture": "node scripts/capture.js"
+    "capture": "node scripts/capture.js",
+    "judge": "node scripts/judge.js"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.131.0",
     "better-sqlite3": "^12.11.1",
     "cheerio": "^1.2.0",
     "next": "^16.3.7",
