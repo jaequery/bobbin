@@ -158,8 +158,9 @@ export async function runPipeline(options = {}, { signal } = {}) {
   let recycling = null;
   let warnedBudget = false;
 
+  // Playwright errors carry a multi-line call log; keep the first line.
   const say = (i, domain, what, ms, entry = {}) =>
-    log(`[${i}/${opts.limit}] ${domain} ${what}${ms != null ? ` ${secs(ms)}` : ""}`, { domain, ...entry });
+    log(`[${i}/${opts.limit}] ${domain} ${what.split("\n")[0]}${ms != null ? ` ${secs(ms)}` : ""}`, { domain, ...entry });
 
   function stopReason() {
     if (signal?.aborted) return "interrupted";
