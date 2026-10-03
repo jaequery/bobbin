@@ -125,7 +125,8 @@ export async function judgeSite(siteOrId, { dryRun = false } = {}) {
   }
 
   getClient(); // fail fast on a missing key, before touching the site's status
-  const previousStatus = site.status;
+  // A site the pipeline already moved to judging goes back to captured on an API error.
+  const previousStatus = site.status === "judging" ? "captured" : site.status;
   if (!dryRun) upsertSite({ domain: site.domain, status: "judging" });
 
   let judgement;
