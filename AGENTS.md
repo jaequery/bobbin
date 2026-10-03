@@ -23,6 +23,7 @@ collections.
 - `--accent` only colors the icon of an active item or pill. It never fills a surface.
 - Content is real websites captured by the pipeline. Guardrails: honor robots.txt, always show and link the source domain, never present a captured site's logo as Bobbin's own asset, and never capture or show an opted-out domain (`optouts` table). Placeholder SVG screens are gone; do not reintroduce fake apps.
 - Data lives in a local SQLite database (`data/bobbin.db`, overridable with `BOBBIN_DATA_DIR`). Create or upgrade it with `npm run db:migrate`; schema changes are new numbered files in `db/migrations/`. Read and write it only through `lib/db.js`, and never import that module from client code (`app/Bobbin.jsx`, `lib/bobbin.js`).
+- Plain `node scripts/*.js` does not read `.env`; a CLI that needs keys or `BOBBIN_DATA_DIR` from it must `import "./env.js"` before anything that imports `lib/db.js` (the data dir is fixed when `lib/db.js` loads).
 - `lib/taxonomy.js` is the single source of platforms, page patterns, section types, industries and site statuses. Import from it; do not hard-code those lists.
 - All view state lives in the URL hash (`#/apps`, `#/screens`, `#/app/<id>` with query filters). Unknown routes and values fall back to the browse view.
 
