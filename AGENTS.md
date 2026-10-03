@@ -30,6 +30,7 @@ collections.
 - After changing `pipeline/prepare.js` or `pipeline/sections.js`, open the resulting `-lg.webp` images for a few real sites (e.g. stripe.com, notion.com, a `.de` news site): a clean exit proves nothing, because consent managers such as Transcend on notion.com mount inside shadow roots after scrolling and only show up in the picture.
 - Worker machines usually have no `ANTHROPIC_API_KEY`, so `npm run judge` cannot reach Claude there; to exercise `pipeline/judge/` end to end, point `ANTHROPIC_BASE_URL` at a local stub that answers `/v1/messages` and use a scratch `BOBBIN_DATA_DIR`, and leave the live-model checks (calibration, real scores) for a run with a key.
 - Playwright closes its browser on the first Ctrl-C by default, which kills in-flight captures; a CLI that handles SIGINT/SIGTERM itself (like `scripts/pipeline.js`) must call `setOwnSignals(true)` from `pipeline/browser.js` before launching and `closeBrowser()` before exiting.
+- To tell a loopback caller from a remote one (admin guard, rate limits), read the `x-bobbin-peer` header that `next.config.mjs` stamps from the socket; never trust `X-Forwarded-For`, because Next only fills it when the client did not send one.
 - All view state lives in the URL hash (`#/apps`, `#/screens`, `#/app/<id>` with query filters). Unknown routes and values fall back to the browse view.
 
 <!-- BEGIN:nextjs-agent-rules -->
