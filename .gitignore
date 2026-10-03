@@ -1,6 +1,9 @@
 # dependencies
 node_modules
 
+# local database and captures (BOBBIN_DATA_DIR)
+data/
+
 # secrets
 .env
 .env.*
