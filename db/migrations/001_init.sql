@@ -1,4 +1,4 @@
--- Bobbin's initial schema. Ids are strings generated in JS (crypto.randomUUID()).
+-- Jethro's initial schema. Ids are strings generated in JS (crypto.randomUUID()).
 -- Timestamps are ISO-8601 text; JSON columns hold JSON text.
 
 CREATE TABLE sites (

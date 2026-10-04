@@ -1,4 +1,4 @@
-// Turns a candidate URL into the site Bobbin stores: a canonical https://<host>/
+// Turns a candidate URL into the site Jethro stores: a canonical https://<host>/
 // URL and its registrable domain, or a reason it is refused.
 import { getDomain } from "tldts";
 import { isOptedOut } from "../../lib/db.js";

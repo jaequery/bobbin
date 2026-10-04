@@ -9,9 +9,9 @@ import { imageBlock } from "./images.js";
 import { JUDGE_SYSTEM, TAG_SYSTEM, judgeUserText } from "./prompt.js";
 import { JUDGE_SCHEMA, SchemaError, TAG_SCHEMA, validateJudgement, validateTags } from "./schema.js";
 
-export const judgeModel = () => process.env.BOBBIN_JUDGE_MODEL || "claude-sonnet-5-5";
+export const judgeModel = () => process.env.JETHRO_JUDGE_MODEL || "claude-sonnet-5-5";
 export const minQuality = () => {
-  const n = Number(process.env.BOBBIN_MIN_QUALITY);
+  const n = Number(process.env.JETHRO_MIN_QUALITY);
   return Number.isFinite(n) && n > 0 ? n : 7;
 };
 
