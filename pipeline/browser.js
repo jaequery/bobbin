@@ -5,7 +5,7 @@ import { chromium } from "playwright";
 const CHROME = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36";
 const MOBILE = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/141.0.7390.96 Mobile/15E148 Safari/604.1";
 
-export const BOT_NAME = "BobbinBot";
+export const BOT_NAME = "JethroBot";
 
 // Keyed by platform id from lib/taxonomy.js.
 export const VIEWPORTS = {

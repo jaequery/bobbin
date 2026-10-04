@@ -1,12 +1,12 @@
 # AGENTS.md
 
-Conventions for AI coding agents working in **bobbin**. This file is the
+Conventions for AI coding agents working in **jethro**. This file is the
 canonical entry point under the [AGENTS.md](https://agents.md) standard, and it
 is the first thing a Fredrin Worker reads.
 
 ## Project
 
-Bobbin is a public design-inspiration library, in the spirit of Mobbin but with
+Jethro is a public design-inspiration library, in the spirit of Mobbin but with
 its own name, branding and content. Visitors browse apps and screens, search,
 and filter by platform, UI pattern and industry. v1 has no accounts and no saved
 collections.
@@ -18,19 +18,19 @@ collections.
 
 ## Conventions
 
-- Next.js App Router, plain JS (no TypeScript). `app/page.jsx` holds the static shell; `app/Bobbin.jsx` calls `mount()` from `lib/bobbin.js`, which renders into that shell imperatively. `mount()` must stay re-runnable: dev StrictMode mounts, cleans up and mounts again, so every listener it adds takes its `signal`.
+- Next.js App Router, plain JS (no TypeScript). `app/page.jsx` holds the static shell; `app/Jethro.jsx` calls `mount()` from `lib/jethro.js`, which renders into that shell imperatively. `mount()` must stay re-runnable: dev StrictMode mounts, cleans up and mounts again, so every listener it adds takes its `signal`.
 - Visual changes must follow `styles.md` and use the `:root` tokens in `app/styles.css`. Do not hard-code new colors or radii.
 - `--accent` only colors the icon of an active item or pill. It never fills a surface.
-- Content is real websites captured by the pipeline. Guardrails: honor robots.txt, always show and link the source domain, never present a captured site's logo as Bobbin's own asset, and never capture or show an opted-out domain (`optouts` table). Placeholder SVG screens are gone; do not reintroduce fake apps.
-- Data lives in a local SQLite database (`data/bobbin.db`, overridable with `BOBBIN_DATA_DIR`). Create or upgrade it with `npm run db:migrate`; schema changes are new numbered files in `db/migrations/`. Read and write it only through `lib/db.js`, and never import that module from client code (`app/Bobbin.jsx`, `lib/bobbin.js`).
+- Content is real websites captured by the pipeline. Guardrails: honor robots.txt, always show and link the source domain, never present a captured site's logo as Jethro's own asset, and never capture or show an opted-out domain (`optouts` table). Placeholder SVG screens are gone; do not reintroduce fake apps.
+- Data lives in a local SQLite database (`data/jethro.db`, overridable with `JETHRO_DATA_DIR`). Create or upgrade it with `npm run db:migrate`; schema changes are new numbered files in `db/migrations/`. Read and write it only through `lib/db.js`, and never import that module from client code (`app/Jethro.jsx`, `lib/jethro.js`).
 - Server code that Next bundles must not build filesystem paths from env at module load without `/*turbopackIgnore: true*/` (see `dataDir` in `lib/db.js`); otherwise `next build` warns and traces the whole project into the server output.
-- Plain `node scripts/*.js` does not read `.env`; a CLI that needs keys or `BOBBIN_DATA_DIR` from it must `import "./env.js"` before anything that imports `lib/db.js` (the data dir is fixed when `lib/db.js` loads).
+- Plain `node scripts/*.js` does not read `.env`; a CLI that needs keys or `JETHRO_DATA_DIR` from it must `import "./env.js"` before anything that imports `lib/db.js` (the data dir is fixed when `lib/db.js` loads).
 - FTS5's `bm25()` fails with "unable to use function bm25 in the requested context" once SQLite flattens its subquery into a join or aggregate; compute scores in a `WITH hits AS MATERIALIZED (...)` CTE, as `lib/queries.js` does, and join that.
 - `lib/taxonomy.js` is the single source of platforms, page patterns, section types, industries and site statuses. Import from it; do not hard-code those lists.
 - After changing `pipeline/prepare.js` or `pipeline/sections.js`, open the resulting `-lg.webp` images for a few real sites (e.g. stripe.com, notion.com, a `.de` news site): a clean exit proves nothing, because consent managers such as Transcend on notion.com mount inside shadow roots after scrolling and only show up in the picture.
-- Worker machines usually have no `ANTHROPIC_API_KEY`, so `npm run judge` cannot reach Claude there; to exercise `pipeline/judge/` end to end, point `ANTHROPIC_BASE_URL` at a local stub that answers `/v1/messages` and use a scratch `BOBBIN_DATA_DIR`, and leave the live-model checks (calibration, real scores) for a run with a key.
+- Worker machines usually have no `ANTHROPIC_API_KEY`, so `npm run judge` cannot reach Claude there; to exercise `pipeline/judge/` end to end, point `ANTHROPIC_BASE_URL` at a local stub that answers `/v1/messages` and use a scratch `JETHRO_DATA_DIR`, and leave the live-model checks (calibration, real scores) for a run with a key.
 - Playwright closes its browser on the first Ctrl-C by default, which kills in-flight captures; a CLI that handles SIGINT/SIGTERM itself (like `scripts/pipeline.js`) must call `setOwnSignals(true)` from `pipeline/browser.js` before launching and `closeBrowser()` before exiting.
-- To tell a loopback caller from a remote one (admin guard, rate limits), read the `x-bobbin-peer` header that `next.config.mjs` stamps from the socket; never trust `X-Forwarded-For`, because Next only fills it when the client did not send one.
+- To tell a loopback caller from a remote one (admin guard, rate limits), read the `x-jethro-peer` header that `next.config.mjs` stamps from the socket; never trust `X-Forwarded-For`, because Next only fills it when the client did not send one.
 - All view state lives in the URL hash (`#/apps`, `#/screens`, `#/app/<id>` with query filters). Unknown routes and values fall back to the browse view.
 
 <!-- BEGIN:nextjs-agent-rules -->

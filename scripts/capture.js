@@ -28,7 +28,7 @@ setHeaded(flags.has("--headed"));
 // Never create a site row for an opted-out domain.
 if (isOptedOut(domain)) {
   recordEvent(null, "capture_skipped", { reason: "optout", domain });
-  console.error(`skipped ${domain}: the domain has opted out of Bobbin`);
+  console.error(`skipped ${domain}: the domain has opted out of Jethro`);
   process.exit(3);
 }
 

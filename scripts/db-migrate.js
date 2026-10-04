@@ -1,5 +1,5 @@
 // Applies unapplied db/migrations/*.sql files in filename order. Safe to re-run.
-// Usage: npm run db:migrate   (BOBBIN_DATA_DIR overrides ./data)
+// Usage: npm run db:migrate   (JETHRO_DATA_DIR overrides ./data)
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";

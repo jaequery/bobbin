@@ -1,12 +1,12 @@
-# Bobbin style guide
+# Jethro style guide
 
-Bobbin's visual system is copied from a reference screenshot the project owner
+Jethro's visual system is copied from a reference screenshot the project owner
 chose: a white, quiet library UI with a fixed left sidebar, an oversized pill
 search bar, a row of pill toggles, and two-column app cards whose screenshots sit
 on soft gradient backdrops.
 
 Only the **styles** come from the reference. The logo, name, copy, apps and
-screenshots are all Bobbin's own.
+screenshots are all Jethro's own.
 
 The reference was a Retina capture. It was measured in device pixels and divided
 by ~1.45 to get CSS pixels, then rounded. The tokens below are the source of
@@ -99,7 +99,7 @@ when its nav item or pill is active. Chevrons and clear buttons are 14px in
 ## 6. Components
 
 ### Sidebar
-- **Logo**: a 46px circle-outline mark (4px stroke, `--ink`) with Bobbin's "b" inside.
+- **Logo**: a 46px circle-outline mark (4px stroke, `--ink`) with Jethro's "j" inside.
 - **Primary button** (`.btn-primary`): 37px tall, `--ink` fill, white text and
   icon, `--r-md`, 13px horizontal padding, 10px icon gap. Label: "New search".
 - **Nav item** (`.nav-item`): 37px tall, transparent with a transparent 1px

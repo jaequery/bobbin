@@ -5,13 +5,13 @@ export const dynamic = "force-dynamic";
 
 const LIMIT = 5;
 const WINDOW_MS = 60 * 60 * 1000;
-const hits = (globalThis.__bobbinRemovalHits ??= new Map());
+const hits = (globalThis.__jethroRemovalHits ??= new Map());
 const LOCAL = /^(127\.|::1$|::ffff:127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|fc|fd)/i;
 
 // The caller's address: the socket peer stamped by next.config.mjs, or, when
 // that peer is a local or private proxy, the last X-Forwarded-For hop it added.
 function clientIp(headers) {
-  const peer = headers.get("x-bobbin-peer") || "";
+  const peer = headers.get("x-jethro-peer") || "";
   const hops = (headers.get("x-forwarded-for") || "").split(",").map((h) => h.trim()).filter(Boolean);
   return (!peer || LOCAL.test(peer)) && hops.length ? hops[hops.length - 1] : peer || "unknown";
 }
@@ -72,5 +72,5 @@ export async function POST(request) {
     console.error(err);
     return fail(500, "Could not record the request. Try again later.");
   }
-  return Response.json({ data: { domain, message: `Thanks. ${domain} is hidden from Bobbin while we review your request.` } }, { headers: { "Cache-Control": "no-store" } });
+  return Response.json({ data: { domain, message: `Thanks. ${domain} is hidden from Jethro while we review your request.` } }, { headers: { "Cache-Control": "no-store" } });
 }

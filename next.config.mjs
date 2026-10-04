@@ -5,11 +5,11 @@ import http from "node:http";
 // loopback caller from a remote one. Next itself only fills X-Forwarded-For when
 // the client did not send one, which makes that header spoofable. The config
 // loads in the server process before it handles any request.
-if (!globalThis.__bobbinPeerStamp) {
-  globalThis.__bobbinPeerStamp = true;
+if (!globalThis.__jethroPeerStamp) {
+  globalThis.__jethroPeerStamp = true;
   const emit = http.Server.prototype.emit;
   http.Server.prototype.emit = function (event, req, ...rest) {
-    if (event === "request" && req?.headers) req.headers["x-bobbin-peer"] = req.socket?.remoteAddress || "";
+    if (event === "request" && req?.headers) req.headers["x-jethro-peer"] = req.socket?.remoteAddress || "";
     return emit.call(this, event, req, ...rest);
   };
 }

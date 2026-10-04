@@ -1,9 +1,9 @@
-// Polite HTTP for discovery: identifies as BobbinBot, waits 1s between requests
+// Polite HTTP for discovery: identifies as JethroBot, waits 1s between requests
 // to the same host, times out after 15s, retries twice with backoff, and checks
 // the host's robots.txt before every crawl request.
 
-export const USER_AGENT = "BobbinBot/1.0 (+https://github.com/jaequery/bobbin)";
-const BOT = "bobbinbot";
+export const USER_AGENT = "JethroBot/1.0 (+https://github.com/jaequery/jethro)";
+const BOT = "jethrobot";
 const SPACING_MS = 1000;
 const TIMEOUT_MS = 15000;
 const RETRIES = 2;
@@ -45,7 +45,7 @@ async function rawFetch(url, init = {}) {
 
 /* ---------- robots.txt ---------- */
 
-// Returns the Allow/Disallow rules that apply to BobbinBot (its own group, or *).
+// Returns the Allow/Disallow rules that apply to JethroBot (its own group, or *).
 export function parseRobots(text) {
   const groups = [];
   let current = null;

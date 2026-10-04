@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 const shotsDir = path.join(dataDir, "shots");
 const notFound = () => new Response("Not found", { status: 404 });
 
-// Streams a captured WebP from BOBBIN_DATA_DIR/shots. The first segment is the
+// Streams a captured WebP from JETHRO_DATA_DIR/shots. The first segment is the
 // site id, so images of sites that are not public (unjudged, rejected, opted
 // out) are not served either, except to the local admin.
 export async function GET(request, { params }) {

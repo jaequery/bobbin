@@ -1,7 +1,7 @@
 # dependencies
 node_modules
 
-# local database and captures (BOBBIN_DATA_DIR)
+# local database and captures (JETHRO_DATA_DIR)
 data/
 
 # secrets

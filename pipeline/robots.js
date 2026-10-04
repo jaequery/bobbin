@@ -13,7 +13,7 @@ export class RobotsDisallowed extends Error {
 
 export class OptedOut extends Error {
   constructor(domain) {
-    super(`${domain} has opted out of Bobbin`);
+    super(`${domain} has opted out of Jethro`);
     this.name = "OptedOut";
     this.code = "optout";
   }
@@ -49,6 +49,6 @@ export async function assertAllowed(url) {
   const domain = normalizeDomain(hostname);
   if (isOptedOut(domain)) throw new OptedOut(domain);
   const robots = await loadRobots(origin);
-  // isAllowed() picks the BobbinBot group when present and falls back to `*`.
+  // isAllowed() picks the JethroBot group when present and falls back to `*`.
   if (robots && robots.isAllowed(url, BOT_NAME) === false) throw new RobotsDisallowed(url);
 }

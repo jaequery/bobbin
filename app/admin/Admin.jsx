@@ -90,10 +90,10 @@ export default function Admin() {
   return (
     <div className="layout admin">
       <aside className="sidebar" aria-label="Admin">
-        <a className="logo" href="/" aria-label="Bobbin home">
+        <a className="logo" href="/" aria-label="Jethro home">
           <svg viewBox="0 0 46 46" aria-hidden="true">
             <circle cx="23" cy="23" r="20.5" fill="none" stroke="currentColor" strokeWidth="4" />
-            <path d="M16.5 12.5v21M16.5 25.5a6.5 6.5 0 1 0 13 0a6.5 6.5 0 1 0 -13 0" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+            <path d="M25.5 13v0.5M25.5 20v9a5 5 0 0 1 -10 0" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
           </svg>
         </a>
         <nav className="nav">
