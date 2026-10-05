@@ -66,8 +66,8 @@ export async function POST(request) {
   if (Object.keys(fields).length) return fail(400, "Check the highlighted fields", fields);
 
   try {
-    addOptout({ domain, email, reason });
-    recordEvent(null, "removal_requested", { domain });
+    await addOptout({ domain, email, reason });
+    await recordEvent(null, "removal_requested", { domain });
   } catch (err) {
     console.error(err);
     return fail(500, "Could not record the request. Try again later.");

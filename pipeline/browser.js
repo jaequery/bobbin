@@ -39,9 +39,21 @@ export function setOwnSignals(value) {
   ownSignals = !!value;
 }
 
+// On Vercel there is no Playwright browser download: use the serverless
+// Chromium build from @sparticuz/chromium (unpacked into /tmp on first launch).
+async function serverlessChromium() {
+  if (!process.env.VERCEL) return {};
+  const { default: sparticuz } = await import("@sparticuz/chromium");
+  // --single-process kills the whole browser when a context closes, and we close
+  // one per capture. The web-security flags would make pages render differently
+  // from a local capture.
+  const drop = new Set(["--single-process", "--disable-web-security", "--allow-running-insecure-content"]);
+  return { executablePath: await sparticuz.executablePath(), args: sparticuz.args.filter((a) => !drop.has(a)) };
+}
+
 export function getBrowser() {
   const signals = ownSignals ? { handleSIGINT: false, handleSIGTERM: false, handleSIGHUP: false } : {};
-  launching ??= chromium.launch({ headless: !headed, ...signals }).catch((err) => {
+  launching ??= serverlessChromium().then((opts) => chromium.launch({ headless: !headed, ...signals, ...opts })).catch((err) => {
     launching = null;
     throw err;
   });

@@ -24,3 +24,4 @@ build
 .fredrin/
 .gstack/
 .vercel
+.env*

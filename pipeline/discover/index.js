@@ -47,8 +47,8 @@ async function* interleave(adapters, opts) {
 export async function addCandidate(candidate, source) {
   const norm = await normalizeCandidate(candidate.url, { allowHosted: source !== "search" });
   if (norm.refused) return norm.refused;
-  if (getSiteByDomain(norm.domain)) return "known";
-  const site = upsertSite({
+  if (await getSiteByDomain(norm.domain)) return "known";
+  const site = await upsertSite({
     domain: norm.domain,
     url: norm.url,
     name: candidate.name || null,
@@ -58,7 +58,7 @@ export async function addCandidate(candidate, source) {
     source,
     sourceRef: candidate.sourceRef || null,
   });
-  recordEvent(site.id, "discovered", { source, sourceRef: candidate.sourceRef || null, from: candidate.url });
+  await recordEvent(site.id, "discovered", { source, sourceRef: candidate.sourceRef || null, from: candidate.url });
   return "inserted";
 }
 

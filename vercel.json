@@ -1,0 +1,7 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "crons": [{ "path": "/api/cron/pipeline", "schedule": "0 */2 * * *" }],
+  "functions": {
+    "app/api/cron/pipeline/route.js": { "memory": 3009 }
+  }
+}

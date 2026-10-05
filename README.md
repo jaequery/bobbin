@@ -18,8 +18,9 @@ Jethro is a Next.js app (App Router). Node 20.9 or newer.
 
 ```sh
 npm install
+vercel link && vercel env pull  # DATABASE_URL (Neon) and BLOB_READ_WRITE_TOKEN into .env.local
 cp .env.example .env         # then fill in the keys you need
-npm run db:migrate           # creates or upgrades data/jethro.db
+npm run db:migrate           # creates or upgrades the Postgres schema
 npm run dev                  # http://localhost:3000
 npm run build && npm start   # production build
 ```
@@ -67,7 +68,8 @@ npm run capture -- https://example.com --headed     # watch the browser
 ```
 
 Each page is shot at desktop (1440) and mobile (390) widths. Images land in
-`data/shots/<siteId>/` as WebP: `<page>-<platform>-full.webp` (the whole page,
+the private Vercel Blob store under `shots/<siteId>/` (or `data/shots/<siteId>/`
+when `BLOB_READ_WRITE_TOKEN` is unset) as WebP: `<page>-<platform>-full.webp` (the whole page,
 capped at 12000 css px), `-lg` and `-sm` top-of-page thumbnails, and
 `sections/<sectionId>{,-sm}.webp` crops. Rows go into `pages`, `screens` and
 `sections`. Opted-out domains and URLs disallowed by robots.txt are skipped and
@@ -94,8 +96,12 @@ npm run judge -- --all-captured --limit 15     # every site with status 'capture
 npm run judge -- --retag <siteId|domain>       # re-run tagging only
 ```
 
-Needs `ANTHROPIC_API_KEY`; without it the CLI exits 1. `JETHRO_JUDGE_MODEL`
-picks the model (default `claude-sonnet-5-5`). Token use and an estimated cost
+Calls go through Vercel AI Gateway, authenticated by `AI_GATEWAY_API_KEY` or
+the Vercel OIDC token (automatic on Vercel; `vercel env pull` puts a 12-hour
+one in `.env.local`). A set `ANTHROPIC_API_KEY` calls Anthropic directly
+instead. With none of these the CLI exits 1. `JETHRO_JUDGE_MODEL` picks the
+model (default `claude-sonnet-5-5`, sent to the gateway as
+`anthropic/claude-sonnet-5.5`). Token use and an estimated cost
 are printed as it runs and logged in `events`. To re-judge a site, set its
 status back to `captured`.
 
@@ -103,7 +109,7 @@ status back to `captured`.
 
 `npm run pipeline` takes sites through discovered → captured (home page) →
 judged → (if approved) subpages captured → tagged, three sites at a time and
-one page at a time per domain. SQLite is the queue: each site is claimed with
+one page at a time per domain. Postgres is the queue: each site is claimed with
 one atomic update, so a crashed or overlapping run never processes a site
 twice, and the next run picks up where the last one stopped.
 
@@ -132,7 +138,7 @@ npm run pipeline:status                       # sites per status and the last 10
 Each run works on unfinished approved sites first, then captured sites waiting
 for the judge, then discovered sites. Judging a site reserves two AI calls
 (judge and tag); once `--max-judge` is used up, newly captured sites stay
-`captured` for the next run. Without `ANTHROPIC_API_KEY` the pipeline only
+`captured` for the next run. Without AI credentials the pipeline only
 captures. Approved sites stay hidden (`capturing`) until their subpages and
 tags are in. It stops claiming when less than 2 GB is free, and restarts the
 browser every 50 sites.
@@ -179,9 +185,24 @@ wakes. Save as `~/Library/LaunchAgents/com.jethro.pipeline.plist`, then
 100 sites a night is a suggested starting point; pick the limit and schedule
 that suit your machine and AI budget.
 
+### On Vercel Cron
+
+Production also runs the pipeline itself: `vercel.json` calls
+`/api/cron/pipeline` every 2 hours. Each run discovers more sites when fewer
+than 12 wait for capture, then takes up to 4 sites, one at a time and with at
+most 4 subpages each, through the pipeline with
+serverless Chromium (`@sparticuz/chromium`) and the judge on AI Gateway via
+OIDC. It stops claiming after 5 minutes so an in-flight site finishes within the
+800-second limit. The route answers 404 unless called with
+`Authorization: Bearer $CRON_SECRET`. On Vercel `JETHRO_DATA_DIR` is
+`/tmp/jethro` (logs only); run logs are in the function logs and `events`.
+Change the batch in `app/api/cron/pipeline/route.js` and the schedule in
+`vercel.json`.
+
 ## Browse the library
 
-`npm run dev` serves the library from `data/jethro.db` and `data/shots`. Before
+`npm run dev` serves the library from Postgres (`DATABASE_URL`) and the shots
+store. Before
 any site is judged, `JETHRO_SHOW_UNJUDGED=1 npm run dev` also shows `captured`
 sites, so a fresh capture can be browsed without an API key.
 
@@ -198,8 +219,9 @@ sites, so a fresh capture can be browsed without an API key.
 Lists answer `{ data: { items, total, next } }`; pass `next` back as `cursor`
 for the following page. Unknown filter values are ignored.
 
-`q` searches a SQLite FTS5 index (`search_idx`, one row per page) with every
-word as a prefix, ranked by bm25 with site name and domain weighted highest.
+`q` searches a Postgres full-text index (`search_idx`, one weighted `tsvector`
+per page) with every word as a prefix, ranked by `ts_rank` with site name and
+domain weighted highest.
 One-character and CJK queries fall back to substring matching. The capture
 engine, judge and tagger keep the index current; `npm run search:reindex`
 rebuilds it, and the server rebuilds it once by itself when it holds fewer rows
@@ -222,7 +244,7 @@ lists sites by status (Queue: captured, failed and in-flight; Discovered;
 Approved; Rejected) with home thumbnails, score and the judge's reasons. Per
 site you can approve or reject, edit name, tagline, industry and country, retag
 each page's pattern and each section's type, re-capture, re-judge (needs
-`ANTHROPIC_API_KEY`) or delete the site and its `data/shots/<id>/`. "Add seeds"
+`ANTHROPIC_API_KEY`) or delete the site and its shots. "Add seeds"
 takes URLs one per line, and "Removal requests" processes opt-outs.
 
 Re-capture and re-judge run as background jobs inside the server process, one
@@ -264,19 +286,21 @@ the library and the pipeline. A new request for a dismissed domain reopens it.
 - `app/Jethro.jsx`: client component that mounts the renderer
 - `app/styles.css`: design tokens and components
 - `styles.md`: the style guide those tokens come from
-- `lib/db.js`: the SQLite connection and query helpers (server only)
+- `lib/db.js`: the Postgres pool and query helpers (server only)
+- `lib/shots.js`: reading, writing and deleting captured images (Vercel Blob, or local disk without a token)
 - `lib/queries.js`: the public browse queries (filters, keyset pagination, public-site rule) behind the API (server only)
 - `lib/api.js`: request parsing and JSON responses shared by the route handlers
 - `app/api/**/route.js`, `app/shots/[...path]/route.js`: the browse API and the image server
 - `lib/taxonomy.js`: platforms, page patterns, section types, industries, color buckets, themes and site statuses
-- `lib/search.js`: the full-text index (reindexing and safe FTS5 queries); `scripts/search-reindex.js` is its CLI
+- `lib/search.js`: the full-text index (reindexing and safe tsquery building); `scripts/search-reindex.js` is its CLI
 - `lib/color.js`: color bucket and theme rules; `scripts/color-backfill.js` applies them to stored screens
 - `lib/regions.js`: country codes grouped by region for the Country filter
 - `db/migrations/*.sql`: the schema, applied in order by `scripts/db-migrate.js`
 - `pipeline/discover/`: discovery adapters (`galleries/`, `search.js`, `seeds.js`), URL normalization and polite fetching
 - `scripts/discover.js`, `scripts/seed.js`: the discovery CLIs
 - `seeds.example.txt`: a starter list of well-designed sites
-- `data/`: the local database and captures (git-ignored; `JETHRO_DATA_DIR` moves it)
+- `data/`: local pipeline logs, and captures when there is no Blob token (git-ignored; `JETHRO_DATA_DIR` moves it)
+- `scripts/import-sqlite.js`: one-off copy of an old SQLite library and its `data/shots` into Postgres and Blob
 - `pipeline/*.js`: the capture engine (browser, page prep, robots/opt-out checks, sections, subpage links); `scripts/capture.js` is its CLI
 - `pipeline/judge/`: the Claude vision judge and tagger (rubric, image prep, output schema); `scripts/judge.js` is its CLI
 - `pipeline/run.js`: the orchestrator (claims, resume, AI budget, logging); `scripts/pipeline.js` and `scripts/pipeline-status.js` are its CLIs
