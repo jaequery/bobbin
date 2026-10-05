@@ -4,7 +4,7 @@
 //        npm run judge -- --retag <siteId|domain>
 import "./env.js";
 import { listSites } from "../lib/db.js";
-import { judgeModel, judgeSite, minQuality, tagSite } from "../pipeline/judge/index.js";
+import { judgeEnabled, judgeModel, judgeSite, minQuality, tagSite } from "../pipeline/judge/index.js";
 
 const USAGE = "usage: npm run judge -- <siteId|domain> [--dry-run] | --all-captured [--limit N] | --retag <siteId|domain>";
 
@@ -18,8 +18,8 @@ const limitArg = valueOf("--limit");
 const positional = args.filter((a, i) => !a.startsWith("--") && args[i - 1] !== "--limit");
 const dryRun = flags.has("--dry-run");
 
-if (!process.env.ANTHROPIC_API_KEY) {
-  console.error("ANTHROPIC_API_KEY is not set (add it to .env); the judge is disabled.");
+if (!judgeEnabled()) {
+  console.error("No AI credentials: run `vercel env pull` (OIDC token for AI Gateway) or set AI_GATEWAY_API_KEY or ANTHROPIC_API_KEY.");
   process.exit(1);
 }
 

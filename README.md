@@ -96,8 +96,12 @@ npm run judge -- --all-captured --limit 15     # every site with status 'capture
 npm run judge -- --retag <siteId|domain>       # re-run tagging only
 ```
 
-Needs `ANTHROPIC_API_KEY`; without it the CLI exits 1. `JETHRO_JUDGE_MODEL`
-picks the model (default `claude-sonnet-5-5`). Token use and an estimated cost
+Calls go through Vercel AI Gateway, authenticated by `AI_GATEWAY_API_KEY` or
+the Vercel OIDC token (automatic on Vercel; `vercel env pull` puts a 12-hour
+one in `.env.local`). A set `ANTHROPIC_API_KEY` calls Anthropic directly
+instead. With none of these the CLI exits 1. `JETHRO_JUDGE_MODEL` picks the
+model (default `claude-sonnet-5-5`, sent to the gateway as
+`anthropic/claude-sonnet-5.5`). Token use and an estimated cost
 are printed as it runs and logged in `events`. To re-judge a site, set its
 status back to `captured`.
 
@@ -134,7 +138,7 @@ npm run pipeline:status                       # sites per status and the last 10
 Each run works on unfinished approved sites first, then captured sites waiting
 for the judge, then discovered sites. Judging a site reserves two AI calls
 (judge and tag); once `--max-judge` is used up, newly captured sites stay
-`captured` for the next run. Without `ANTHROPIC_API_KEY` the pipeline only
+`captured` for the next run. Without AI credentials the pipeline only
 captures. Approved sites stay hidden (`capturing`) until their subpages and
 tags are in. It stops claiming when less than 2 GB is free, and restarts the
 browser every 50 sites.
@@ -180,6 +184,19 @@ wakes. Save as `~/Library/LaunchAgents/com.jethro.pipeline.plist`, then
 
 100 sites a night is a suggested starting point; pick the limit and schedule
 that suit your machine and AI budget.
+
+### On Vercel Cron
+
+Production also runs the pipeline itself: `vercel.json` calls
+`/api/cron/pipeline` every 4 hours. Each run discovers more sites when fewer
+than 12 wait for capture, then takes up to 6 sites through the pipeline with
+serverless Chromium (`@sparticuz/chromium`) and the judge on AI Gateway via
+OIDC. It stops claiming after 7.5 minutes so in-flight sites finish within the
+800-second limit. The route answers 404 unless called with
+`Authorization: Bearer $CRON_SECRET`. On Vercel `JETHRO_DATA_DIR` is
+`/tmp/jethro` (logs only); run logs are in the function logs and `events`.
+Change the batch in `app/api/cron/pipeline/route.js` and the schedule in
+`vercel.json`.
 
 ## Browse the library
 

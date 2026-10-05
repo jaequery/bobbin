@@ -3,13 +3,28 @@
 // gives every page of an approved site a page pattern and every section crop a
 // section type. Both write through lib/db.js and log token usage as events.
 import Anthropic from "@anthropic-ai/sdk";
+import { getVercelOidcToken } from "@vercel/oidc";
 import { all, get, getSite, getSiteByDomain, recordEvent, run, tx, upsertSite } from "../../lib/db.js";
 import { reindexSite } from "../../lib/search.js";
 import { imageBlock } from "./images.js";
 import { JUDGE_SYSTEM, TAG_SYSTEM, judgeUserText } from "./prompt.js";
 import { JUDGE_SCHEMA, SchemaError, TAG_SCHEMA, validateJudgement, validateTags } from "./schema.js";
 
-export const judgeModel = () => process.env.JETHRO_JUDGE_MODEL || "claude-sonnet-5-5";
+// Calls go to Anthropic directly when ANTHROPIC_API_KEY is set; otherwise
+// through Vercel AI Gateway (the Anthropic SDK pointed at it), authenticated by
+// AI_GATEWAY_API_KEY or the Vercel OIDC token: automatic on Vercel, and pulled
+// into .env.local by `vercel env pull` locally (valid 12 hours).
+const GATEWAY_URL = "https://ai-gateway.vercel.sh";
+export const viaGateway = () => !process.env.ANTHROPIC_API_KEY;
+export const judgeEnabled = () =>
+  !!(process.env.ANTHROPIC_API_KEY || process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN || process.env.VERCEL);
+// Gateway ids look like "anthropic/claude-sonnet-5.5"; Anthropic ids like "claude-sonnet-5-5".
+const toGatewayId = (m) => (m.includes("/") ? m : `anthropic/${m.replace(/-(\d+)-(\d+)$/, "-$1.$2")}`);
+const toAnthropicId = (m) => m.replace(/^anthropic\//, "").replace(/-(\d+)\.(\d+)$/, "-$1-$2");
+export const judgeModel = () => {
+  const m = process.env.JETHRO_JUDGE_MODEL || "claude-sonnet-5-5";
+  return viaGateway() ? toGatewayId(m) : toAnthropicId(m);
+};
 export const minQuality = () => {
   const n = Number(process.env.JETHRO_MIN_QUALITY);
   return Number.isFinite(n) && n > 0 ? n : 7;
@@ -26,22 +41,25 @@ const PRICES = {
 
 export class JudgeDisabled extends Error {
   constructor() {
-    super("ANTHROPIC_API_KEY is not set; the judge is disabled");
+    super("No AI credentials (ANTHROPIC_API_KEY, AI_GATEWAY_API_KEY or a Vercel OIDC token); the judge is disabled");
     this.code = "judge_disabled";
   }
 }
 
-let client;
-function getClient() {
-  if (!process.env.ANTHROPIC_API_KEY) throw new JudgeDisabled();
-  // The SDK retries 408/409/429/5xx and connection errors with backoff.
-  return (client ??= new Anthropic({ maxRetries: 4 }));
+let direct;
+// The SDK retries 408/409/429/5xx and connection errors with backoff. A gateway
+// client is made per call so a refreshed OIDC token is always used.
+async function getClient() {
+  if (!judgeEnabled()) throw new JudgeDisabled();
+  if (!viaGateway()) return (direct ??= new Anthropic({ maxRetries: 4 }));
+  const token = process.env.AI_GATEWAY_API_KEY || (await getVercelOidcToken());
+  return new Anthropic({ baseURL: GATEWAY_URL, apiKey: null, authToken: token, maxRetries: 4 });
 }
 
 /* ---------- Usage and cost ---------- */
 
 export function costOf(usage, model = judgeModel()) {
-  const [inp, out] = PRICES[model] ?? PRICES["claude-sonnet-5-5"];
+  const [inp, out] = PRICES[toAnthropicId(model)] ?? PRICES["claude-sonnet-5-5"];
   return ((usage.input_tokens ?? 0) * inp + (usage.cache_creation_input_tokens ?? 0) * inp * 1.25 +
     (usage.cache_read_input_tokens ?? 0) * inp * 0.1 + (usage.output_tokens ?? 0) * out) / 1e6;
 }
@@ -60,11 +78,12 @@ function addUsage(total, u) {
 // after the second invalid answer; API errors propagate after the SDK's retries.
 async function ask({ system, content, schema, validate, effort, usage }) {
   const model = judgeModel();
-  const fallback = FALLBACK_MODELS.has(model);
+  // The server-side fallback beta is Anthropic-only; the gateway routes on its own.
+  const fallback = !viaGateway() && FALLBACK_MODELS.has(model);
   let lastError;
   for (let attempt = 0; attempt < 2; attempt++) {
     // No temperature: current models reject non-default sampling parameters.
-    const res = await getClient().beta.messages.create({
+    const res = await (await getClient()).beta.messages.create({
       model,
       max_tokens: 16000,
       system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
@@ -125,7 +144,7 @@ export async function judgeSite(siteOrId, { dryRun = false } = {}) {
     return { site, status: "failed", error: "no_capture", usage, cost: 0 };
   }
 
-  getClient(); // fail fast on a missing key, before touching the site's status
+  if (!judgeEnabled()) throw new JudgeDisabled(); // fail fast, before touching the site's status
   // A site the pipeline already moved to judging goes back to captured on an API error.
   const previousStatus = site.status === "judging" ? "captured" : site.status;
   if (!dryRun) await upsertSite({ domain: site.domain, status: "judging" });
@@ -190,7 +209,7 @@ export async function judgeSite(siteOrId, { dryRun = false } = {}) {
 // Returns { pages: [{ path, pattern, sections }], usage, cost }.
 export async function tagSite(siteOrId, { dryRun = false } = {}) {
   const site = await resolveSite(siteOrId);
-  getClient();
+  if (!judgeEnabled()) throw new JudgeDisabled();
   const usage = {};
   const result = [];
   const pages = await all("SELECT * FROM pages WHERE site_id = @siteId ORDER BY path", { siteId: site.id });

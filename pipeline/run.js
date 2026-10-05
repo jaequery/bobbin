@@ -1,6 +1,6 @@
 // The orchestrator behind `npm run pipeline`: takes sites through
 // discovered → captured (home) → judged → (if approved) subpages captured →
-// tagged, a few sites at a time. SQLite is the queue: every site is claimed with
+// tagged, a few sites at a time. Postgres is the queue: every site is claimed with
 // one atomic UPDATE, so runs can overlap, crash and resume from DB state.
 import { appendFileSync, mkdirSync, statfsSync } from "node:fs";
 import { readdir, stat } from "node:fs/promises";
@@ -14,7 +14,7 @@ import { reindexSite } from "../lib/search.js";
 import { removeShots, removeSiteShots, shotsDir } from "../lib/shots.js";
 import { captureHome, captureSubpages, closeBrowser } from "./capture.js";
 import { discover } from "./discover/index.js";
-import { judgeSite, tagSite } from "./judge/index.js";
+import { judgeEnabled, judgeSite, tagSite } from "./judge/index.js";
 
 const STALE_MS = 30 * 60 * 1000; // a transient status untouched this long belongs to a dead run
 const RECYCLE_EVERY = 50; // sites per browser, to keep Chromium's memory in check
@@ -99,7 +99,7 @@ export async function runPipeline(options = {}, { signal } = {}) {
   const runId = randomUUID().slice(0, 8);
   const log = makeLogger(runId);
   const started = Date.now();
-  const judgeOn = !!process.env.ANTHROPIC_API_KEY;
+  const judgeOn = judgeEnabled();
   const totals = {
     discovered: 0, claimed: 0, captured: 0, approved: 0, rejected: 0, failed: 0, skipped: 0,
     deferred: 0, tagged: 0, aiCalls: 0, cost: 0, diskAdded: 0, stopped: null,
@@ -111,13 +111,13 @@ export async function runPipeline(options = {}, { signal } = {}) {
     log(`waiting: ${q.capture} to capture, ${q.judge} to judge, ${q.finish} approved to finish`);
     log(`by status: ${Object.entries(await statusCounts()).map(([s, n]) => `${s} ${n}`).join(", ") || "no sites"}`);
     if (opts.discover) log(`would discover from ${opts.sources.join(", ")} first`);
-    if (!judgeOn) log("ANTHROPIC_API_KEY is not set: sites would only be captured");
+    if (!judgeOn) log("no AI credentials: sites would only be captured");
     return totals;
   }
 
   await recordEvent(null, "pipeline_started", { run: runId, pid: process.pid, options: opts });
   log(`run ${runId}: limit ${opts.limit}, concurrency ${opts.concurrency}, max AI calls ${opts.maxJudge}`, { event: "start", options: opts });
-  if (!judgeOn) log("warning: ANTHROPIC_API_KEY is not set, so sites are captured but not judged; they stay 'captured' for a later run");
+  if (!judgeOn) log("warning: no AI credentials (ANTHROPIC_API_KEY, AI_GATEWAY_API_KEY or a Vercel OIDC token), so sites are captured but not judged; they stay 'captured' for a later run");
   else if (opts.maxJudge < 2) log("warning: judging a site needs room for 2 AI calls (judge + tag); --max-judge below 2 judges nothing");
 
   // Resume: sites a crashed run left in a transient status become claimable again.
@@ -167,7 +167,8 @@ export async function runPipeline(options = {}, { signal } = {}) {
   function stopReason() {
     if (signal?.aborted) return "interrupted";
     if (index >= opts.limit) return "limit";
-    if (freeBytes() < MIN_FREE_BYTES) return "low_disk";
+    // Shots in Blob use no local disk (and a function's /tmp is small).
+    if (!process.env.BLOB_READ_WRITE_TOKEN && freeBytes() < MIN_FREE_BYTES) return "low_disk";
     return null;
   }
 
