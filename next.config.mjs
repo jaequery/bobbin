@@ -15,6 +15,12 @@ if (!globalThis.__jethroPeerStamp) {
 }
 
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  // The cron pipeline launches Chromium: Playwright reads files the tracer
+  // misses (browsers.json), and @sparticuz/chromium unpacks its bin/ at runtime.
+  outputFileTracingIncludes: {
+    "/api/cron/pipeline": ["./node_modules/playwright-core/**/*", "./node_modules/@sparticuz/chromium/bin/**/*"],
+  },
+};
 
 export default nextConfig;
