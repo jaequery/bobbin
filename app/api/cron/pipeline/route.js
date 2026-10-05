@@ -2,17 +2,19 @@ import { queueCounts } from "../../../../lib/db";
 import { runPipeline } from "../../../../pipeline/run";
 
 export const dynamic = "force-dynamic";
-// Pro plan ceiling. The run stops claiming at STOP_CLAIMING_MS so in-flight
-// sites (capture, judge, subpages, tags) can finish before the hard limit.
+// Pro plan ceiling. The run stops claiming at STOP_CLAIMING_MS so an in-flight
+// site (home, judge, subpages, tags: several minutes on a function's CPU) can
+// finish before the hard limit. A site cut off anyway is reset by a later run.
 export const maxDuration = 800;
-const STOP_CLAIMING_MS = 450 * 1000;
+const STOP_CLAIMING_MS = 300 * 1000;
 
 // Each run: refill the queue from discovery when it runs low, then take a few
-// sites through capture → judge → subpages → tags. Small batches keep one
-// function's Chromium within memory and the run within maxDuration; the
-// schedule in vercel.json sets how often it runs. Claims are atomic, so a run
+// sites through capture → judge → subpages → tags, one at a time (a function
+// has no GPU and little CPU, so a page takes about a minute). Fewer subpages
+// than a local run keep an approved site within one run. The schedule in
+// vercel.json sets how often it runs. Claims are atomic, so a run
 // that overlaps another (or a local `npm run pipeline`) never doubles up.
-const RUN = { limit: 6, concurrency: 2, maxJudge: 12, discoverLimit: 30, retryFailed: true };
+const RUN = { limit: 4, concurrency: 1, maxJudge: 8, subpages: 4, discoverLimit: 30, retryFailed: true };
 const LOW_QUEUE = 12;
 
 // Vercel Cron calls this with `Authorization: Bearer $CRON_SECRET`.

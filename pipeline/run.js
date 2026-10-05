@@ -23,7 +23,7 @@ const MAX_ATTEMPTS = 3;
 
 export const DEFAULTS = {
   discover: false, sources: ["galleries", "search"], discoverLimit: 200,
-  limit: 25, concurrency: 3, maxJudge: 100,
+  limit: 25, concurrency: 3, maxJudge: 100, subpages: 8,
   recaptureOlderThan: null, retryFailed: false, pruneRejected: false, dryRun: false,
 };
 
@@ -249,7 +249,7 @@ export async function runPipeline(options = {}, { signal } = {}) {
     try {
       let t = Date.now();
       try {
-        const sub = await captureSubpages(site.id, { links });
+        const sub = await captureSubpages(site.id, { links, max: opts.subpages });
         say(i, site.domain, `subpages captured (${sub.pages} pages${sub.skipped.length ? `, ${sub.skipped.length} skipped` : ""})`, Date.now() - t, { event: "subpages", pages: sub.pages });
       } catch (err) {
         say(i, site.domain, `subpages failed, tagging the home page only: ${err.message}`, Date.now() - t, { event: "subpages_failed" });

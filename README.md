@@ -188,10 +188,11 @@ that suit your machine and AI budget.
 ### On Vercel Cron
 
 Production also runs the pipeline itself: `vercel.json` calls
-`/api/cron/pipeline` every 4 hours. Each run discovers more sites when fewer
-than 12 wait for capture, then takes up to 6 sites through the pipeline with
+`/api/cron/pipeline` every 2 hours. Each run discovers more sites when fewer
+than 12 wait for capture, then takes up to 4 sites, one at a time and with at
+most 4 subpages each, through the pipeline with
 serverless Chromium (`@sparticuz/chromium`) and the judge on AI Gateway via
-OIDC. It stops claiming after 7.5 minutes so in-flight sites finish within the
+OIDC. It stops claiming after 5 minutes so an in-flight site finishes within the
 800-second limit. The route answers 404 unless called with
 `Authorization: Bearer $CRON_SECRET`. On Vercel `JETHRO_DATA_DIR` is
 `/tmp/jethro` (logs only); run logs are in the function logs and `events`.

@@ -24,6 +24,10 @@ export { closeBrowser };
 
 const MAX_ATTEMPTS = 3;
 const POLITE_MS = 1000;
+// Hard ceiling for loading and shooting one page at one viewport. Some steps
+// (page scripts, font loading) have no timeout of their own and can hang on a
+// slow machine; closing the context makes every pending call fail instead.
+const SHOOT_TIMEOUT_MS = 120000;
 const WEBP_MAX = 16383; // WebP's hard limit on either side
 
 // Output sizes per platform: thumbnails are top crops at a fixed aspect.
@@ -106,6 +110,8 @@ function tonesOf(dominant, palette) {
 // Loads `url` at one viewport and returns the screenshot plus layout facts.
 async function shoot(site, url, platform, { wantLinks = false } = {}) {
   const context = await newContext(platform);
+  let timedOut = false;
+  const timer = setTimeout(() => { timedOut = true; context.close().catch(() => {}); }, SHOOT_TIMEOUT_MS);
   try {
     const page = await context.newPage();
     await politeWait(site.domain);
@@ -131,7 +137,11 @@ async function shoot(site, url, platform, { wantLinks = false } = {}) {
     const sections = await findSections(page, height);
     const links = wantLinks ? await collectLinks(page) : [];
     return { png, height, title, finalUrl, sections, links };
+  } catch (err) {
+    if (timedOut) throw new CaptureError("timeout", `${platform} capture took over ${SHOOT_TIMEOUT_MS / 1000}s`);
+    throw err;
   } finally {
+    clearTimeout(timer);
     await context.close().catch(() => {});
   }
 }
