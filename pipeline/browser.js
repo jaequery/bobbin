@@ -44,7 +44,11 @@ export function setOwnSignals(value) {
 async function serverlessChromium() {
   if (!process.env.VERCEL) return {};
   const { default: sparticuz } = await import("@sparticuz/chromium");
-  return { executablePath: await sparticuz.executablePath(), args: sparticuz.args };
+  // --single-process kills the whole browser when a context closes, and we close
+  // one per capture. The web-security flags would make pages render differently
+  // from a local capture.
+  const drop = new Set(["--single-process", "--disable-web-security", "--allow-running-insecure-content"]);
+  return { executablePath: await sparticuz.executablePath(), args: sparticuz.args.filter((a) => !drop.has(a)) };
 }
 
 export function getBrowser() {
