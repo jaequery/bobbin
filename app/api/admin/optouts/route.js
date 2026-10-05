@@ -3,7 +3,7 @@ import { decideRemoval, removalRequests } from "../../../../lib/admin-data";
 
 export const dynamic = "force-dynamic";
 
-export const GET = adminRoute(() => ({ items: removalRequests() }));
+export const GET = adminRoute(async () => ({ items: await removalRequests() }));
 
 // { domain, status: "approved" | "dismissed" }
 export const PATCH = adminRoute(async (request) => {

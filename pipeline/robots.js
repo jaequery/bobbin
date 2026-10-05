@@ -47,7 +47,7 @@ function loadRobots(origin) {
 export async function assertAllowed(url) {
   const { origin, hostname } = new URL(url);
   const domain = normalizeDomain(hostname);
-  if (isOptedOut(domain)) throw new OptedOut(domain);
+  if (await isOptedOut(domain)) throw new OptedOut(domain);
   const robots = await loadRobots(origin);
   // isAllowed() picks the JethroBot group when present and falls back to `*`.
   if (robots && robots.isAllowed(url, BOT_NAME) === false) throw new RobotsDisallowed(url);

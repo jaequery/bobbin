@@ -37,7 +37,7 @@ if (flags.has("--retag")) {
   targets = [];
   let cursor;
   do {
-    const page = listSites({ status: "captured", limit: 200, cursor });
+    const page = await listSites({ status: "captured", limit: 200, cursor });
     targets.push(...page.items.map((s) => s.id));
     cursor = page.next;
   } while (cursor && targets.length < limit);

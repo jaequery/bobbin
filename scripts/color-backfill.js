@@ -3,12 +3,11 @@
 // Without --all only screens that have no bucket yet are updated.
 import "./env.js";
 import { colorTags } from "../lib/color.js";
-import { db } from "../lib/db.js";
+import { all, run, tx } from "../lib/db.js";
 
-const all = process.argv.includes("--all");
-const rows = db.prepare(`SELECT id, dominant, palette FROM screens ${all ? "" : "WHERE hue_bucket IS NULL"}`).all();
-const set = db.prepare("UPDATE screens SET hue_bucket = @hueBucket, theme = @theme WHERE id = @id");
-db.transaction(() => {
-  for (const r of rows) set.run({ id: r.id, ...colorTags(r.dominant, r.palette) });
-})();
+const every = process.argv.includes("--all");
+const rows = await all(`SELECT id, dominant, palette FROM screens ${every ? "" : "WHERE hue_bucket IS NULL"}`);
+await tx(async () => {
+  for (const r of rows) await run("UPDATE screens SET hue_bucket = @hueBucket, theme = @theme WHERE id = @id", { id: r.id, ...colorTags(r.dominant, r.palette) });
+});
 console.log(`updated ${rows.length} screens`);

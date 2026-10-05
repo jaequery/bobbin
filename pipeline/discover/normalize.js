@@ -56,7 +56,7 @@ export async function normalizeCandidate(input, { allowHosted = true, resolve = 
   if (BLOCKLIST.includes(domain) || BLOCKLIST.includes(base)) return { refused: `${domain} is a gallery or social site` };
   if (REDIRECTORS.has(base)) return { refused: "unresolved redirect" };
   if (hosted && !allowHosted) return { refused: `${domain} is on a shared host` };
-  if (isOptedOut(domain)) return { refused: `${domain} has opted out` };
+  if (await isOptedOut(domain)) return { refused: `${domain} has opted out` };
 
   return { url: `https://${host}/`, domain };
 }

@@ -1,19 +1,18 @@
-// The capture engine: loads a site's pages at desktop and mobile widths, writes
-// full-page, thumbnail and per-section WebP images under data/shots/<siteId>/,
-// and records them as pages, screens and sections rows.
+// The capture engine: loads a site's pages at desktop and mobile widths, stores
+// full-page, thumbnail and per-section WebP images as shots under <siteId>/
+// (lib/shots.js), and records them as pages, screens and sections rows.
 //
 // Exports captureHome, captureSubpages and closeBrowser so a caller can reuse
 // one browser across many sites.
-import { mkdir, rm, writeFile } from "node:fs/promises";
-import path from "node:path";
 import { randomUUID } from "node:crypto";
 import sharp from "sharp";
 import {
-  dataDir, db, deletePage, deleteScreensForPage, getSite, insertPage, insertScreen, insertSection,
-  isOptedOut, listPages, recordEvent, upsertSite,
+  deletePage, deleteScreensForPage, getSite, insertPage, insertScreen, insertSection,
+  isOptedOut, listPages, recordEvent, tx, upsertSite,
 } from "../lib/db.js";
 import { colorTags } from "../lib/color.js";
 import { reindexSite } from "../lib/search.js";
+import { putShot, removeShots } from "../lib/shots.js";
 import { PLATFORMS } from "../lib/taxonomy.js";
 import { closeBrowser, newContext, VIEWPORTS } from "./browser.js";
 import { MAX_HEIGHT, preparePage } from "./prepare.js";
@@ -22,8 +21,6 @@ import { collectLinks, pickSubpages, registrableDomain } from "./links.js";
 import { assertAllowed, OptedOut } from "./robots.js";
 
 export { closeBrowser };
-
-export const shotsDir = path.join(dataDir, "shots");
 
 const MAX_ATTEMPTS = 3;
 const POLITE_MS = 1000;
@@ -145,17 +142,16 @@ const slugOf = (p) => (p === "/" ? "home" : p.toLowerCase().replace(/[^a-z0-9]+/
 
 async function writeWebp(pipeline, rel, quality) {
   const buf = await pipeline.webp({ quality, effort: 5 }).toBuffer({ resolveWithObject: true });
-  await writeFile(path.join(shotsDir, rel), buf.data);
+  await putShot(rel, buf.data);
   return buf.info;
 }
 
 // Writes full, lg, sm and section images for one screenshot. Returns screen
-// fields and section rows, with paths relative to data/shots.
+// fields and section rows, with shot paths.
 async function writeScreen(site, slug, platform, shot) {
   const size = SIZES[platform];
   const dpr = VIEWPORTS[platform].deviceScaleFactor;
   const dir = site.id;
-  await mkdir(path.join(shotsDir, dir, "sections"), { recursive: true });
 
   const meta = await sharp(shot.png).metadata();
   const base = `${dir}/${slug}-${platform}`;
@@ -219,23 +215,23 @@ async function capturePage(site, { url, path: pagePath, pattern }, { wantLinks =
   for (const { id: platform } of PLATFORMS) written[platform] = await writeScreen(site, slug, platform, shots[platform]);
 
   const capturedAt = new Date().toISOString();
-  const { stale, page } = db.transaction(() => {
-    const page = insertPage({ siteId: site.id, url: shots.desktop.finalUrl, path: pagePath, pattern, title: shots.desktop.title || null, capturedAt });
-    const stale = deleteScreensForPage(page.id);
+  const { stale, page } = await tx(async () => {
+    const page = await insertPage({ siteId: site.id, url: shots.desktop.finalUrl, path: pagePath, pattern, title: shots.desktop.title || null, capturedAt });
+    const stale = await deleteScreensForPage(page.id);
     for (const { id: platform } of PLATFORMS) {
-      const screen = insertScreen({ siteId: site.id, pageId: page.id, capturedAt, ...written[platform].screen });
-      for (const s of written[platform].sections) insertSection({ ...s, screenId: screen.id, siteId: site.id });
+      const screen = await insertScreen({ siteId: site.id, pageId: page.id, capturedAt, ...written[platform].screen });
+      for (const s of written[platform].sections) await insertSection({ ...s, screenId: screen.id, siteId: site.id });
     }
     return { stale, page };
-  })();
-  reindexSite(site.id);
+  });
+  await reindexSite(site.id);
 
   // Old files this capture did not overwrite.
   const fresh = new Set(PLATFORMS.flatMap(({ id }) => [
     written[id].screen.fullPath, written[id].screen.lgPath, written[id].screen.smPath,
     ...written[id].sections.flatMap((s) => [s.imgPath, s.smPath]),
   ]));
-  await Promise.all(stale.filter((p) => !fresh.has(p)).map((p) => rm(path.join(shotsDir, p), { force: true })));
+  await removeShots(stale.filter((p) => !fresh.has(p)));
 
   return {
     page,
@@ -255,25 +251,25 @@ function siteUrl(site) {
 
 // Records a failed capture. Permanent problems fail the site at once; others
 // after MAX_ATTEMPTS tries.
-function recordFailure(site, err, previousStatus) {
+async function recordFailure(site, err, previousStatus) {
   const code = err.code || "error";
   const permanent = ["redirected_offsite", "blocked", "robots_disallowed"].includes(code);
   const attempts = (site.attempts ?? 0) + 1;
   const failed = permanent || attempts >= MAX_ATTEMPTS;
-  upsertSite({
+  await upsertSite({
     domain: site.domain,
     attempts,
     lastError: code === "error" ? String(err.message).slice(0, 500) : code,
     status: failed ? "failed" : previousStatus,
     ...(err.finalUrl ? { url: err.finalUrl } : {}),
   });
-  recordEvent(site.id, "capture_failed", { code, message: String(err.message).slice(0, 500), attempts, url: siteUrl(site) });
+  await recordEvent(site.id, "capture_failed", { code, message: String(err.message).slice(0, 500), attempts, url: siteUrl(site) });
 }
 
 // Opted-out or robots-disallowed: nothing is written, the reason is logged.
-function recordSkip(site, err) {
-  if (err instanceof OptedOut) upsertSite({ domain: site.domain, status: "optout" });
-  recordEvent(site.id, "capture_skipped", { reason: err.code, message: err.message });
+async function recordSkip(site, err) {
+  if (err instanceof OptedOut) await upsertSite({ domain: site.domain, status: "optout" });
+  await recordEvent(site.id, "capture_skipped", { reason: err.code, message: err.message });
 }
 
 const isSkip = (err) => err.code === "optout" || err.code === "robots_disallowed";
@@ -281,20 +277,20 @@ const isSkip = (err) => err.code === "optout" || err.code === "robots_disallowed
 // Captures a site's home page at both viewports and marks the site captured.
 // Returns { pages, screens, sections, links } or throws after recording the failure.
 export async function captureHome(siteOrId) {
-  const site = typeof siteOrId === "string" ? getSite(siteOrId) : getSite(siteOrId.id) ?? siteOrId;
+  const site = typeof siteOrId === "string" ? await getSite(siteOrId) : (await getSite(siteOrId.id)) ?? siteOrId;
   // A site the pipeline claimed (queued) goes back to discovered on a retryable failure.
   const previousStatus = site.status === "queued" ? "discovered" : site.status;
-  if (isOptedOut(site.domain)) {
+  if (await isOptedOut(site.domain)) {
     const err = new OptedOut(site.domain);
-    recordSkip(site, err);
+    await recordSkip(site, err);
     throw err;
   }
-  upsertSite({ domain: site.domain, status: "capturing" });
+  await upsertSite({ domain: site.domain, status: "capturing" });
   try {
     const home = new URL(siteUrl(site));
     const result = await capturePage(site, { url: home.href, path: "/", pattern: "Home" }, { wantLinks: true });
     const [toneA, toneB] = tonesOf(result.colors.dominant, result.colors.palette);
-    upsertSite({
+    await upsertSite({
       domain: site.domain,
       url: result.finalUrl,
       status: "captured",
@@ -303,14 +299,14 @@ export async function captureHome(siteOrId) {
       palette: result.colors.palette,
       lastError: null,
     });
-    recordEvent(site.id, "captured", { path: "/", sections: result.sections });
+    await recordEvent(site.id, "captured", { path: "/", sections: result.sections });
     return { pages: 1, screens: result.screens, sections: result.sections, links: result.links };
   } catch (err) {
     if (isSkip(err)) {
-      if (err.code === "robots_disallowed") upsertSite({ domain: site.domain, status: "failed", lastError: err.code });
-      recordSkip(site, err);
+      if (err.code === "robots_disallowed") await upsertSite({ domain: site.domain, status: "failed", lastError: err.code });
+      await recordSkip(site, err);
     } else {
-      recordFailure(site, err, previousStatus);
+      await recordFailure(site, err, previousStatus);
     }
     throw err;
   }
@@ -320,7 +316,7 @@ export async function captureHome(siteOrId) {
 // from captureHome to skip reloading the home page. A failing subpage is
 // logged and skipped; the site's status is left alone.
 export async function captureSubpages(siteOrId, { max = 8, links } = {}) {
-  const site = typeof siteOrId === "string" ? getSite(siteOrId) : getSite(siteOrId.id) ?? siteOrId;
+  const site = typeof siteOrId === "string" ? await getSite(siteOrId) : (await getSite(siteOrId.id)) ?? siteOrId;
   const home = siteUrl(site);
   if (!links) {
     await assertAllowed(home);
@@ -334,10 +330,10 @@ export async function captureSubpages(siteOrId, { max = 8, links } = {}) {
       totals.pages++;
       totals.screens += r.screens;
       totals.sections += r.sections;
-      recordEvent(site.id, "captured", { path: target.path, sections: r.sections });
+      await recordEvent(site.id, "captured", { path: target.path, sections: r.sections });
     } catch (err) {
       totals.skipped.push({ path: target.path, reason: err.code || err.message });
-      recordEvent(site.id, isSkip(err) ? "capture_skipped" : "capture_failed", { path: target.path, code: err.code ?? null, message: String(err.message).slice(0, 500) });
+      await recordEvent(site.id, isSkip(err) ? "capture_skipped" : "capture_failed", { path: target.path, code: err.code ?? null, message: String(err.message).slice(0, 500) });
       if (err instanceof OptedOut) break;
     }
   }
@@ -345,11 +341,10 @@ export async function captureSubpages(siteOrId, { max = 8, links } = {}) {
   // Subpages an earlier run picked that this one did not: drop them so the
   // site's set of pages matches the current selection.
   const keep = new Set(["/", ...targets.map((t) => t.path)]);
-  for (const page of listPages(site.id)) {
+  for (const page of await listPages(site.id)) {
     if (keep.has(page.path)) continue;
-    const stale = deletePage(page.id);
-    await Promise.all(stale.map((p) => rm(path.join(shotsDir, p), { force: true })));
+    await removeShots(await deletePage(page.id));
   }
-  reindexSite(site.id);
+  await reindexSite(site.id);
   return totals;
 }

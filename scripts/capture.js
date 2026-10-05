@@ -1,5 +1,6 @@
-// Captures one site into data/shots and the database.
+// Captures one site into the shots store and the database.
 // Usage: npm run capture -- <url> [--subpages] [--headed]
+import "./env.js";
 import { isOptedOut, normalizeDomain, recordEvent, upsertSite } from "../lib/db.js";
 import { setHeaded } from "../pipeline/browser.js";
 import { captureHome, captureSubpages, closeBrowser } from "../pipeline/capture.js";
@@ -26,14 +27,14 @@ const started = Date.now();
 setHeaded(flags.has("--headed"));
 
 // Never create a site row for an opted-out domain.
-if (isOptedOut(domain)) {
-  recordEvent(null, "capture_skipped", { reason: "optout", domain });
+if (await isOptedOut(domain)) {
+  await recordEvent(null, "capture_skipped", { reason: "optout", domain });
   console.error(`skipped ${domain}: the domain has opted out of Jethro`);
   process.exit(3);
 }
 
-const existing = upsertSite({ domain, source: "manual" });
-const site = existing.url ? existing : upsertSite({ domain, url: url.href });
+const existing = await upsertSite({ domain, source: "manual" });
+const site = existing.url ? existing : await upsertSite({ domain, url: url.href });
 
 let code = 0;
 try {

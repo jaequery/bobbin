@@ -4,5 +4,5 @@ import "./env.js";
 import { reindexAll } from "../lib/search.js";
 
 const t = Date.now();
-const n = reindexAll();
+const n = await reindexAll();
 console.log(`indexed ${n} pages in ${Date.now() - t}ms`);

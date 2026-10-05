@@ -14,18 +14,24 @@
     "pipeline": "node scripts/pipeline.js",
     "pipeline:status": "node scripts/pipeline-status.js",
     "search:reindex": "node scripts/search-reindex.js",
-    "color:backfill": "node scripts/color-backfill.js"
+    "color:backfill": "node scripts/color-backfill.js",
+    "import:sqlite": "node scripts/import-sqlite.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.131.0",
-    "better-sqlite3": "^12.11.1",
+    "@vercel/blob": "^2.8.0",
+    "@vercel/functions": "^3.9.11",
     "cheerio": "^1.2.0",
     "next": "^16.3.7",
+    "pg": "^8.23.1",
     "playwright": "^1.63.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "robots-parser": "^3.0.1",
     "sharp": "^0.35.5",
     "tldts": "^7.4.16"
+  },
+  "devDependencies": {
+    "better-sqlite3": "^12.11.1"
   }
 }

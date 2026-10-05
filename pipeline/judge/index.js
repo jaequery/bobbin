@@ -3,7 +3,7 @@
 // gives every page of an approved site a page pattern and every section crop a
 // section type. Both write through lib/db.js and log token usage as events.
 import Anthropic from "@anthropic-ai/sdk";
-import { db, getSite, getSiteByDomain, recordEvent, upsertSite } from "../../lib/db.js";
+import { all, get, getSite, getSiteByDomain, recordEvent, run, tx, upsertSite } from "../../lib/db.js";
 import { reindexSite } from "../../lib/search.js";
 import { imageBlock } from "./images.js";
 import { JUDGE_SYSTEM, TAG_SYSTEM, judgeUserText } from "./prompt.js";
@@ -94,17 +94,17 @@ async function ask({ system, content, schema, validate, effort, usage }) {
 
 /* ---------- Loading a site's images ---------- */
 
-function resolveSite(siteOrId) {
-  if (typeof siteOrId !== "string") return getSite(siteOrId.id) ?? siteOrId;
-  const site = getSite(siteOrId) ?? getSiteByDomain(siteOrId);
+async function resolveSite(siteOrId) {
+  if (typeof siteOrId !== "string") return (await getSite(siteOrId.id)) ?? siteOrId;
+  const site = (await getSite(siteOrId)) ?? (await getSiteByDomain(siteOrId));
   if (!site) throw new Error(`no site with id or domain ${siteOrId}`);
   return site;
 }
 
-function homeScreens(siteId) {
-  const page = db.prepare("SELECT * FROM pages WHERE site_id = ? AND path = '/'").get(siteId);
+async function homeScreens(siteId) {
+  const page = await get("SELECT * FROM pages WHERE site_id = @siteId AND path = '/'", { siteId });
   if (!page) return { page: null, screens: {} };
-  const rows = db.prepare("SELECT * FROM screens WHERE page_id = ? AND lg_path IS NOT NULL").all(page.id);
+  const rows = await all("SELECT * FROM screens WHERE page_id = @pageId AND lg_path IS NOT NULL", { pageId: page.id });
   return { page, screens: Object.fromEntries(rows.map((r) => [r.platform, r])) };
 }
 
@@ -113,14 +113,14 @@ function homeScreens(siteId) {
 // Judges a captured site from its desktop and mobile home folds. With
 // `dryRun` nothing is written. Returns { site, status, judgement, usage, cost }.
 export async function judgeSite(siteOrId, { dryRun = false } = {}) {
-  const site = resolveSite(siteOrId);
-  const { page, screens } = homeScreens(site.id);
+  const site = await resolveSite(siteOrId);
+  const { page, screens } = await homeScreens(site.id);
   const usage = {};
 
   if (!screens.desktop && !screens.mobile) {
     if (!dryRun) {
-      upsertSite({ domain: site.domain, status: "failed", lastError: "no_capture" });
-      recordEvent(site.id, "judge_failed", { code: "no_capture" });
+      await upsertSite({ domain: site.domain, status: "failed", lastError: "no_capture" });
+      await recordEvent(site.id, "judge_failed", { code: "no_capture" });
     }
     return { site, status: "failed", error: "no_capture", usage, cost: 0 };
   }
@@ -128,7 +128,7 @@ export async function judgeSite(siteOrId, { dryRun = false } = {}) {
   getClient(); // fail fast on a missing key, before touching the site's status
   // A site the pipeline already moved to judging goes back to captured on an API error.
   const previousStatus = site.status === "judging" ? "captured" : site.status;
-  if (!dryRun) upsertSite({ domain: site.domain, status: "judging" });
+  if (!dryRun) await upsertSite({ domain: site.domain, status: "judging" });
 
   let judgement;
   try {
@@ -143,13 +143,13 @@ export async function judgeSite(siteOrId, { dryRun = false } = {}) {
     const cost = costOf(usage);
     if (dryRun) throw err;
     if (err instanceof SchemaError) {
-      upsertSite({ domain: site.domain, status: "failed", lastError: `judge_schema: ${err.message}`.slice(0, 500), judgedAt: new Date().toISOString() });
-      recordEvent(site.id, "judge_failed", { code: "schema", message: err.message, model: judgeModel(), usage, cost });
-      return { site: getSite(site.id), status: "failed", error: err.message, usage, cost };
+      await upsertSite({ domain: site.domain, status: "failed", lastError: `judge_schema: ${err.message}`.slice(0, 500), judgedAt: new Date().toISOString() });
+      await recordEvent(site.id, "judge_failed", { code: "schema", message: err.message, model: judgeModel(), usage, cost });
+      return { site: await getSite(site.id), status: "failed", error: err.message, usage, cost };
     }
     // API or local error: leave the site as it was so a later run retries it.
-    upsertSite({ domain: site.domain, status: previousStatus });
-    recordEvent(site.id, "judge_error", { message: String(err.message).slice(0, 500), status: err.status ?? null, model: judgeModel(), usage, cost });
+    await upsertSite({ domain: site.domain, status: previousStatus });
+    await recordEvent(site.id, "judge_error", { message: String(err.message).slice(0, 500), status: err.status ?? null, model: judgeModel(), usage, cost });
     throw err;
   }
 
@@ -160,12 +160,12 @@ export async function judgeSite(siteOrId, { dryRun = false } = {}) {
   const now = new Date().toISOString();
   const notes = { scores: judgement.scores, reasons: judgement.verdict_reasons, model: judgeModel(), min_quality: minQuality() };
   if (!judgement.capture_ok) {
-    upsertSite({
+    await upsertSite({
       domain: site.domain, status, lastError: "bad_capture", judgedAt: now,
       qualityNotes: JSON.stringify({ ...notes, capture_problem: judgement.capture_problem }),
     });
   } else {
-    upsertSite({
+    await upsertSite({
       domain: site.domain, status, lastError: null, judgedAt: now,
       approvedAt: status === "approved" ? now : null,
       quality: judgement.quality, qualityNotes: JSON.stringify(notes),
@@ -173,13 +173,13 @@ export async function judgeSite(siteOrId, { dryRun = false } = {}) {
       industry: judgement.industry, country: judgement.country, language: judgement.language,
     });
   }
-  reindexSite(site.id);
-  recordEvent(site.id, "judged", {
+  await reindexSite(site.id);
+  await recordEvent(site.id, "judged", {
     status, quality: judgement.quality, capture_ok: judgement.capture_ok,
     ...(judgement.capture_ok ? {} : { capture_problem: judgement.capture_problem }),
     model: judgeModel(), usage, cost,
   });
-  return { site: getSite(site.id), status, judgement, usage, cost };
+  return { site: await getSite(site.id), status, judgement, usage, cost };
 }
 
 /* ---------- Tagging ---------- */
@@ -189,20 +189,21 @@ export async function judgeSite(siteOrId, { dryRun = false } = {}) {
 // most 12 images: the page's desktop fold plus up to 11 section thumbnails.
 // Returns { pages: [{ path, pattern, sections }], usage, cost }.
 export async function tagSite(siteOrId, { dryRun = false } = {}) {
-  const site = resolveSite(siteOrId);
+  const site = await resolveSite(siteOrId);
   getClient();
   const usage = {};
   const result = [];
-  const pages = db.prepare("SELECT * FROM pages WHERE site_id = ? ORDER BY path").all(site.id);
+  const pages = await all("SELECT * FROM pages WHERE site_id = @siteId ORDER BY path", { siteId: site.id });
 
   for (const page of pages) {
-    const desktop = db.prepare("SELECT * FROM screens WHERE page_id = ? AND platform = 'desktop'").get(page.id);
-    const pageImage = desktop?.lg_path ?? db.prepare("SELECT lg_path FROM screens WHERE page_id = ? AND lg_path IS NOT NULL").get(page.id)?.lg_path;
+    const pageId = page.id;
+    const desktop = await get("SELECT * FROM screens WHERE page_id = @pageId AND platform = 'desktop'", { pageId });
+    const pageImage = desktop?.lg_path ?? (await get("SELECT lg_path FROM screens WHERE page_id = @pageId AND lg_path IS NOT NULL", { pageId }))?.lg_path;
     if (!pageImage) continue;
-    const sections = db.prepare(`
+    const sections = (await all(`
       SELECT se.*, sc.platform FROM sections se JOIN screens sc ON sc.id = se.screen_id
-      WHERE sc.page_id = ? ORDER BY sc.platform, se.y
-    `).all(page.id).filter((s) => s.sm_path || s.img_path);
+      WHERE sc.page_id = @pageId ORDER BY sc.platform, se.y
+    `, { pageId })).filter((s) => s.sm_path || s.img_path);
 
     const pageBlock = await imageBlock(pageImage);
     const batches = [];
@@ -226,17 +227,16 @@ export async function tagSite(siteOrId, { dryRun = false } = {}) {
     // The first batch saw the page with its top sections; it decides the pattern.
     const pattern = patterns[0];
     if (!dryRun) {
-      db.transaction(() => {
-        db.prepare("UPDATE pages SET pattern = ? WHERE id = ?").run(pattern, page.id);
-        const set = db.prepare("UPDATE sections SET type = ? WHERE id = ?");
-        for (const [id, type] of types) set.run(type, id);
-      })();
+      await tx(async () => {
+        await run("UPDATE pages SET pattern = @pattern WHERE id = @pageId", { pattern, pageId });
+        for (const [id, type] of types) await run("UPDATE sections SET type = @type WHERE id = @id", { type, id });
+      });
     }
     result.push({ path: page.path, pattern, sections: Object.fromEntries(types) });
   }
 
   const cost = costOf(usage);
-  if (!dryRun) reindexSite(site.id);
-  if (!dryRun) recordEvent(site.id, "tagged", { pages: result.length, sections: result.reduce((n, p) => n + Object.keys(p.sections).length, 0), model: judgeModel(), usage, cost });
+  if (!dryRun) await reindexSite(site.id);
+  if (!dryRun) await recordEvent(site.id, "tagged", { pages: result.length, sections: result.reduce((n, p) => n + Object.keys(p.sections).length, 0), model: judgeModel(), usage, cost });
   return { pages: result, usage, cost };
 }

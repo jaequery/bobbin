@@ -3,7 +3,7 @@
 // tagged, a few sites at a time. SQLite is the queue: every site is claimed with
 // one atomic UPDATE, so runs can overlap, crash and resume from DB state.
 import { appendFileSync, mkdirSync, statfsSync } from "node:fs";
-import { readdir, rm, stat } from "node:fs/promises";
+import { readdir, stat } from "node:fs/promises";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import {
@@ -11,7 +11,8 @@ import {
   requeueFailed, requeueOldCaptures, resetStaleClaims, setSiteStatus, statusCounts,
 } from "../lib/db.js";
 import { reindexSite } from "../lib/search.js";
-import { captureHome, captureSubpages, closeBrowser, shotsDir } from "./capture.js";
+import { removeShots, removeSiteShots, shotsDir } from "../lib/shots.js";
+import { captureHome, captureSubpages, closeBrowser } from "./capture.js";
 import { discover } from "./discover/index.js";
 import { judgeSite, tagSite } from "./judge/index.js";
 
@@ -105,31 +106,31 @@ export async function runPipeline(options = {}, { signal } = {}) {
   };
 
   if (opts.dryRun) {
-    const q = queueCounts();
+    const q = await queueCounts();
     log(`dry run: would advance up to ${opts.limit} sites, ${opts.concurrency} at a time, at most ${opts.maxJudge} AI calls`);
     log(`waiting: ${q.capture} to capture, ${q.judge} to judge, ${q.finish} approved to finish`);
-    log(`by status: ${Object.entries(statusCounts()).map(([s, n]) => `${s} ${n}`).join(", ") || "no sites"}`);
+    log(`by status: ${Object.entries(await statusCounts()).map(([s, n]) => `${s} ${n}`).join(", ") || "no sites"}`);
     if (opts.discover) log(`would discover from ${opts.sources.join(", ")} first`);
     if (!judgeOn) log("ANTHROPIC_API_KEY is not set: sites would only be captured");
     return totals;
   }
 
-  recordEvent(null, "pipeline_started", { run: runId, pid: process.pid, options: opts });
+  await recordEvent(null, "pipeline_started", { run: runId, pid: process.pid, options: opts });
   log(`run ${runId}: limit ${opts.limit}, concurrency ${opts.concurrency}, max AI calls ${opts.maxJudge}`, { event: "start", options: opts });
   if (!judgeOn) log("warning: ANTHROPIC_API_KEY is not set, so sites are captured but not judged; they stay 'captured' for a later run");
   else if (opts.maxJudge < 2) log("warning: judging a site needs room for 2 AI calls (judge + tag); --max-judge below 2 judges nothing");
 
   // Resume: sites a crashed run left in a transient status become claimable again.
-  for (const r of resetStaleClaims(new Date(Date.now() - STALE_MS).toISOString())) {
+  for (const r of await resetStaleClaims(new Date(Date.now() - STALE_MS).toISOString())) {
     log(`resume ${r.domain} -> ${r.status}`, { event: "reset", domain: r.domain, status: r.status });
   }
   if (opts.retryFailed) {
-    const rows = requeueFailed(MAX_ATTEMPTS);
+    const rows = await requeueFailed(MAX_ATTEMPTS);
     log(`re-queued ${rows.length} failed sites`, { event: "retry_failed", count: rows.length });
   }
   if (opts.recaptureOlderThan) {
     const before = new Date(Date.now() - opts.recaptureOlderThan).toISOString();
-    const rows = requeueOldCaptures(before, opts.limit);
+    const rows = await requeueOldCaptures(before, opts.limit);
     log(`re-queued ${rows.length} approved sites captured before ${before.slice(0, 10)}`, { event: "recapture", count: rows.length });
   }
 
@@ -172,25 +173,25 @@ export async function runPipeline(options = {}, { signal } = {}) {
 
   // Next site to work on: unfinished approved sites first, then captured sites
   // waiting for the judge, then discovered sites.
-  function nextJob() {
+  async function nextJob() {
     if (take(1)) {
-      const site = claimSite("finish", { exclude: seen });
+      const site = await claimSite("finish", { exclude: seen });
       if (site) return { kind: "finish", site };
       give(1);
     }
     if (take(2)) {
-      const site = claimSite("judge", { exclude: seen });
+      const site = await claimSite("judge", { exclude: seen });
       if (site) return { kind: "judge", site };
       give(2);
     }
     for (;;) {
-      const site = claimSite("capture", { exclude: seen });
+      const site = await claimSite("capture", { exclude: seen });
       if (!site) return null;
-      if (!isOptedOut(site.domain)) return { kind: "capture", site };
+      if (!(await isOptedOut(site.domain))) return { kind: "capture", site };
       // Opted out after it was discovered: never load it.
       seen.push(site.id);
-      setSiteStatus(site.id, "optout");
-      recordEvent(site.id, "capture_skipped", { reason: "optout", run: runId });
+      await setSiteStatus(site.id, "optout");
+      await recordEvent(site.id, "capture_skipped", { reason: "optout", run: runId });
       log(`skip ${site.domain}: opted out`, { domain: site.domain, event: "optout" });
       totals.skipped++;
     }
@@ -237,7 +238,7 @@ export async function runPipeline(options = {}, { signal } = {}) {
       return;
     }
     // Hidden from the library until its subpages and tags are in.
-    if (!moveSite(site.id, "approved", "capturing")) return;
+    if (!(await moveSite(site.id, "approved", "capturing"))) return;
     await finish(site, links, i);
   }
 
@@ -260,21 +261,18 @@ export async function runPipeline(options = {}, { signal } = {}) {
         totals.tagged++;
         say(i, site.domain, `tagged (${tags.pages.length} pages)`, Date.now() - t, { event: "tagged", pages: tags.pages.length, cost: tags.cost });
       } catch (err) {
-        recordEvent(site.id, "tag_error", { message: String(err.message).slice(0, 500), run: runId });
+        await recordEvent(site.id, "tag_error", { message: String(err.message).slice(0, 500), run: runId });
         say(i, site.domain, `tagging failed, will retry next run: ${err.message}`, Date.now() - t, { event: "tag_error" });
       }
     } finally {
-      moveSite(site.id, "capturing", "approved");
+      await moveSite(site.id, "capturing", "approved");
     }
   }
 
   async function prune(siteId, i, domain) {
-    for (const page of listPages(siteId)) {
-      const paths = deletePage(page.id);
-      await Promise.all(paths.map((p) => rm(path.join(shotsDir, p), { force: true })));
-    }
-    await rm(path.join(shotsDir, siteId), { recursive: true, force: true });
-    reindexSite(siteId);
+    for (const page of await listPages(siteId)) await removeShots(await deletePage(page.id));
+    await removeSiteShots(siteId);
+    await reindexSite(siteId);
     say(i, domain, "pruned rejected screenshots", null, { event: "pruned" });
   }
 
@@ -287,7 +285,7 @@ export async function runPipeline(options = {}, { signal } = {}) {
     try {
       home = await captureHome(site.id);
     } catch (err) {
-      const now = getSite(site.id);
+      const now = await getSite(site.id);
       if (err.code === "optout" || err.code === "robots_disallowed") {
         totals.skipped++;
         say(i, site.domain, `skipped: ${err.code}`, Date.now() - t, { event: "skipped", code: err.code });
@@ -308,17 +306,17 @@ export async function runPipeline(options = {}, { signal } = {}) {
       warnedBudget = true;
       return;
     }
-    if (!moveSite(site.id, "captured", "judging")) return give(2);
+    if (!(await moveSite(site.id, "captured", "judging"))) return give(2);
     await judgeAndFinish(site, home.links, i);
   }
 
   // Puts a site back where it can be claimed after an unexpected error.
-  function release(kind, siteId) {
-    const s = getSite(siteId);
+  async function release(kind, siteId) {
+    const s = await getSite(siteId);
     if (!s) return;
-    if (s.status === "judging") moveSite(siteId, "judging", "captured");
-    else if (s.status === "capturing") moveSite(siteId, "capturing", kind === "capture" ? "discovered" : "approved");
-    else if (s.status === "queued") moveSite(siteId, "queued", "discovered");
+    if (s.status === "judging") await moveSite(siteId, "judging", "captured");
+    else if (s.status === "capturing") await moveSite(siteId, "capturing", kind === "capture" ? "discovered" : "approved");
+    else if (s.status === "queued") await moveSite(siteId, "queued", "discovered");
   }
 
   async function worker() {
@@ -326,19 +324,19 @@ export async function runPipeline(options = {}, { signal } = {}) {
       if (stopReason()) return;
       await maybeRecycle();
       if (stopReason()) return;
-      const job = nextJob();
+      const job = await nextJob();
       if (!job) return;
       const i = ++index;
       seen.push(job.site.id);
       totals.claimed++;
       active++;
       sinceRecycle++;
-      recordEvent(job.site.id, "pipeline_claimed", { run: runId, pid: process.pid, kind: job.kind });
+      await recordEvent(job.site.id, "pipeline_claimed", { run: runId, pid: process.pid, kind: job.kind });
       try {
         await processJob(job, i);
       } catch (err) {
-        release(job.kind, job.site.id);
-        recordEvent(job.site.id, "pipeline_error", { run: runId, kind: job.kind, message: String(err.message).slice(0, 500) });
+        await release(job.kind, job.site.id).catch(() => {});
+        await recordEvent(job.site.id, "pipeline_error", { run: runId, kind: job.kind, message: String(err.message).slice(0, 500) });
         say(i, job.site.domain, `error: ${err.message}`, null, { event: "error" });
       } finally {
         active--;
@@ -356,7 +354,7 @@ export async function runPipeline(options = {}, { signal } = {}) {
   if (totals.stopped === "low_disk") log(`warning: less than ${formatBytes(MIN_FREE_BYTES)} free under ${dataDir}; stopped claiming sites`);
   totals.diskAdded = (await dirSize(shotsDir)) - diskBefore;
   totals.elapsed = Date.now() - started;
-  recordEvent(null, "pipeline_finished", { run: runId, pid: process.pid, ...totals });
+  await recordEvent(null, "pipeline_finished", { run: runId, pid: process.pid, ...totals });
   log(summaryTable(totals), { event: "summary", totals });
   return totals;
 }
