@@ -99,7 +99,7 @@ export async function runPipeline(options = {}, { signal } = {}) {
   const runId = randomUUID().slice(0, 8);
   const log = makeLogger(runId);
   const started = Date.now();
-  const judgeOn = judgeEnabled();
+  let judgeOn = judgeEnabled();
   const totals = {
     discovered: 0, claimed: 0, captured: 0, approved: 0, rejected: 0, failed: 0, skipped: 0,
     deferred: 0, tagged: 0, aiCalls: 0, cost: 0, diskAdded: 0, stopped: null,
@@ -219,6 +219,13 @@ export async function runPipeline(options = {}, { signal } = {}) {
       totals.aiCalls++;
       give(1);
       say(i, site.domain, `judge error, left captured: ${err.message}`, Date.now() - t, { event: "judge_error" });
+      // Bad credentials, no credits or a model the account may not use: every
+      // later call would fail the same way, so capture only for the rest of the
+      // run instead of spending its limit on judge attempts.
+      if (judgeOn && [401, 402, 403].includes(err.status)) {
+        judgeOn = false;
+        log(`warning: the judge was refused (${err.status}); capturing only for the rest of this run`, { event: "judge_refused", status: err.status });
+      }
       return;
     }
     if (r.error === "no_capture") {

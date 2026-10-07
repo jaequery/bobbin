@@ -40,41 +40,99 @@ export class Blocked extends Error {
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+// Runs in the page: true when `el` sits inside consent UI. That is an ancestor
+// (climbing out of shadow roots) whose tag, id, class or aria-label says so, or
+// a small container whose own text is about cookies: class names can be hashed
+// (airbnb) and the UI can be web components (Usercentrics on porsche.com).
+function inConsentScope(el, scope) {
+  const scopeRe = new RegExp(scope, "i");
+  const LIMIT = 5000;
+  const parentOf = (n) => n.parentElement || n.getRootNode().host || null;
+  // The node's text including its shadow roots (innerText stops at each one),
+  // or null once it passes LIMIT: a container that big is the page, not a banner.
+  const textOf = (node) => {
+    let text = "";
+    const walk = (root) => {
+      for (const child of root.childNodes) {
+        if (child.nodeType === Node.TEXT_NODE) text += child.data;
+        else if (child.nodeType === Node.ELEMENT_NODE && !/^(STYLE|SCRIPT|NOSCRIPT|TEMPLATE)$/.test(child.tagName)) {
+          if (child.shadowRoot) walk(child.shadowRoot);
+          walk(child);
+        }
+        if (text.length > LIMIT) return;
+      }
+    };
+    if (node.shadowRoot) walk(node.shadowRoot);
+    walk(node);
+    return text.length > LIMIT ? null : text;
+  };
+  for (let n = parentOf(el); n && n !== document.body && n !== document.documentElement; n = parentOf(n)) {
+    if (scopeRe.test(`${n.tagName} ${n.id} ${typeof n.className === "string" ? n.className : ""} ${n.getAttribute("aria-label") || ""}`)) return true;
+    const text = textOf(n);
+    if (text === null) return false;
+    if (/cookie|tracking technolog|consent/i.test(text)) return true;
+  }
+  return false;
+}
+
+// Clicks with a real (trusted) click, which some consent managers require, then
+// returns to the top: the click scrolls the button into view.
+async function realClick(page, locator) {
+  await locator.click({ timeout: 3000 }).catch(() => locator.evaluate((el) => el.click()).catch(() => {}));
+  await page.evaluate(() => window.scrollTo(0, 0)).catch(() => {});
+}
+
 async function clickConsent(page) {
   for (const frame of page.frames()) {
-    const clicked = await frame.evaluate(({ selectors, text, scope }) => {
+    // Known consent-manager buttons, searched through shadow roots.
+    const marked = await frame.evaluate((selectors) => {
       const visible = (el) => {
         const r = el.getBoundingClientRect();
         const s = getComputedStyle(el);
         return r.width > 0 && r.height > 0 && s.visibility !== "hidden" && s.display !== "none";
       };
-      // Consent managers (Transcend, Usercentrics...) often render in shadow roots.
       const roots = [document];
       for (let i = 0; i < roots.length; i++) {
         for (const el of roots[i].querySelectorAll("*")) if (el.shadowRoot) roots.push(el.shadowRoot);
       }
-      const all = (sel) => roots.flatMap((r) => [...r.querySelectorAll(sel)]);
-      // Climbs out of shadow roots to the host element.
-      const parentOf = (n) => n.parentElement || n.getRootNode().host || null;
       for (const sel of selectors) {
-        const el = all(sel).find(visible);
-        if (el) { el.click(); return true; }
-      }
-      const textRe = new RegExp(text, "i");
-      const scopeRe = new RegExp(scope, "i");
-      const inFrame = window !== window.top && scopeRe.test(location.href);
-      for (const el of all("button, a[role=button], [role=button], input[type=button], input[type=submit]")) {
-        const label = (el.innerText || el.value || "").trim().replace(/\s+/g, " ");
-        if (!label || label.length > 40 || !textRe.test(label) || !visible(el)) continue;
-        let inScope = inFrame;
-        for (let n = el; n && !inScope && n !== document.body; n = parentOf(n)) {
-          inScope = scopeRe.test(`${n.id} ${typeof n.className === "string" ? n.className : ""} ${n.getAttribute("aria-label") || ""}`);
-        }
-        if (inScope) { el.click(); return true; }
+        const el = roots.flatMap((r) => [...r.querySelectorAll(sel)]).find(visible);
+        if (el) { el.setAttribute("data-jethro-consent", ""); return true; }
       }
       return false;
-    }, { selectors: CONSENT_BUTTONS, text: ACCEPT_TEXT.source, scope: CONSENT_SCOPE.source }).catch(() => false);
-    if (clicked) return true;
+    }, CONSENT_BUTTONS).catch(() => false);
+    if (marked) {
+      // CSS locators pierce open shadow roots.
+      const target = frame.locator("[data-jethro-consent]").first();
+      await realClick(page, target);
+      await target.evaluate((el) => el.removeAttribute("data-jethro-consent")).catch(() => {});
+      return true;
+    }
+
+    // Any button whose accessible name says accept, inside consent UI. Accessible
+    // names include slotted text, so design-system buttons (<uc-p-button>) count.
+    // A page can hold several (porsche.com has an "Agree" that saves a settings
+    // form far down the page), so prefer one on screen, then an "accept all".
+    const inConsentFrame = frame !== page.mainFrame() && CONSENT_SCOPE.test(frame.url());
+    const buttons = frame.getByRole("button", { name: ACCEPT_TEXT });
+    const count = Math.min(await buttons.count().catch(() => 0), 10);
+    const candidates = [];
+    for (let i = 0; i < count; i++) {
+      const button = buttons.nth(i);
+      if (!(await button.isVisible().catch(() => false))) continue;
+      if (!inConsentFrame && !(await button.evaluate(inConsentScope, CONSENT_SCOPE.source).catch(() => false))) continue;
+      const facts = await button.evaluate((el) => {
+        const r = el.getBoundingClientRect();
+        const label = `${el.innerText} ${el.getRootNode().host?.textContent ?? ""} ${el.getAttribute("aria-label") ?? ""}`;
+        return { onScreen: r.bottom > 0 && r.top < innerHeight, all: /\b(all|alle|tout|todo|tutto|alles)\b/i.test(label) };
+      }).catch(() => ({}));
+      candidates.push({ button, rank: (facts.onScreen ? 2 : 0) + (facts.all ? 1 : 0) });
+    }
+    candidates.sort((a, b) => b.rank - a.rank);
+    if (candidates.length) {
+      await realClick(page, candidates[0].button);
+      return true;
+    }
   }
   return false;
 }
@@ -128,6 +186,9 @@ export async function preparePage(page, url) {
   if (await clickConsent(page)) await sleep(400);
   await removeConsentOverlays(page);
   await sleep(800);
+  // Some sites restore their own scroll position after a consent click; sticky
+  // headers must be drawn as at the top of the page.
+  await page.evaluate(() => window.scrollTo(0, 0)).catch(() => {});
 
   return { finalUrl: page.url(), title, status: res?.status() ?? null };
 }
