@@ -13,7 +13,10 @@
 // Web Guru Awards (winners page and site pages render client-side), bestcss.in
 // (mostly agency and local-business submissions), Muzli (inspiration is articles and
 // shots, not a site list), DesignMunk (no outbound site links), Pafolios (client-rendered),
-// CSS Awards (cssawards.net, now a parked domain).
+// CSS Awards (cssawards.net, now a parked domain), UIJar (the domain now hosts an
+// unrelated business), DesignRush and Web Design Museum (403 behind a bot challenge),
+// Websitevice (small category pages of mixed quality, robots.txt asks a 10s crawl delay),
+// Minimalissimo (product and interior design, not websites).
 import * as awwwards from "./awwwards.js";
 import * as cssdesignawards from "./cssdesignawards.js";
 import * as refero from "./refero.js";
@@ -51,5 +54,6 @@ import * as cssline from "./cssline.js";
 import * as orpetron from "./orpetron.js";
 import * as unmatchedstyle from "./unmatchedstyle.js";
 import * as a1gallery from "./a1gallery.js";
+import * as seesaw from "./seesaw.js";
 
-export const GALLERIES = [awwwards, cssdesignawards, refero, onepagelove, curated, httpster, cssnectar, minimalGallery, darkmodedesign, siteofsites, admiretheweb, bestwebsitegallery, typewolf, hoverstates, siiimple, landinglove, ecommdesign, brutalistwebsites, footerdesign, mindsparklemag, deadsimplesites, landingfolio, csswinner, navbargallery, designnominees, semplice, webdesignclip, csslight, details, saaspages, saaslandingpage, sitesee, landinggallery, cssline, orpetron, unmatchedstyle, a1gallery];
+export const GALLERIES = [awwwards, cssdesignawards, refero, onepagelove, curated, httpster, cssnectar, minimalGallery, darkmodedesign, siteofsites, admiretheweb, bestwebsitegallery, typewolf, hoverstates, siiimple, landinglove, ecommdesign, brutalistwebsites, footerdesign, mindsparklemag, deadsimplesites, landingfolio, csswinner, navbargallery, designnominees, semplice, webdesignclip, csslight, details, saaspages, saaslandingpage, sitesee, landinggallery, cssline, orpetron, unmatchedstyle, a1gallery, seesaw];
