@@ -47,8 +47,9 @@ runs at most `--max-queries` (default 30) queries per run.
 `--limit` caps the new sites a run adds. Sites already in the library do not
 count toward it, so each run reads past the gallery entries earlier runs took,
 up to ten times the limit in candidates. Refero, Site of Sites, Details Inspo, SiteSee
-and Landing Gallery are read from their sitemaps, and they, Admire the Web, Typewolf,
-SaaS Pages and Orpetron skip the detail pages already stored as a site's source.
+Landing Gallery and A1 Gallery are read from their sitemaps, and they, Admire the Web,
+Typewolf, SaaS Pages, Orpetron and Unmatched Style skip the detail pages already stored
+as a site's source.
 
 | Adapter | Status |
 | --- | --- |
@@ -87,6 +88,8 @@ SaaS Pages and Orpetron skip the detail pages already stored as a site's source.
 | Landing Gallery | working, read from its sitemap newest first, one page fetched per new site |
 | CSSline | working |
 | Orpetron (awarded and nominated sites) | working, one detail page fetched per new site |
+| Unmatched Style (gallery) | working, read from its WordPress API newest first, one post fetched per new site, categories mapped to industry |
+| A1 Gallery | working, read from its sitemap newest first, one page fetched per new site, templates skipped, type and category mapped to industry |
 | Godly | not adapted: redirects to recent.design, a client-rendered app |
 | The FWA | not adapted: client-rendered |
 | Land-book, Lapa Ninja, Web Design Inspiration, Saaspo, Maxibestof | not adapted: 403 behind a bot challenge |
@@ -102,6 +105,7 @@ SaaS Pages and Orpetron skip the detail pages already stored as a site's source.
 | Muzli | not adapted: its inspiration is articles and shots, not a list of sites |
 | DesignMunk | not adapted: no outbound site links |
 | Pafolios | not adapted: client-rendered |
+| CSS Awards (cssawards.net) | not adapted: the domain is parked |
 | Brave Search | working; skipped with a notice when `BRAVE_API_KEY` is unset |
 
 ## Capture a site
