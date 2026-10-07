@@ -18,7 +18,10 @@
 // Websitevice (small category pages of mixed quality, robots.txt asks a 10s crawl delay),
 // Minimalissimo (product and interior design, not websites), Page Collective (app
 // flows and screens, not sites), SaaS Websites (no outbound site links), GSAP showcase
-// and Bento Grids (client-rendered).
+// and Bento Grids (client-rendered), Call to Inspiration and Communication Arts
+// Webpicks (client-rendered), Web Design Awards (webdesignawards.io, paid submissions
+// from agencies and local businesses), Fonts In Use (robots.txt asks a 10s crawl
+// delay), UI UX Showcase (mostly design resources and tools, not sites).
 import * as awwwards from "./awwwards.js";
 import * as cssdesignawards from "./cssdesignawards.js";
 import * as refero from "./refero.js";
@@ -59,5 +62,6 @@ import * as a1gallery from "./a1gallery.js";
 import * as seesaw from "./seesaw.js";
 import * as landingsdev from "./landingsdev.js";
 import * as pricingpages from "./pricingpages.js";
+import * as typio from "./typio.js";
 
-export const GALLERIES = [awwwards, cssdesignawards, refero, onepagelove, curated, httpster, cssnectar, minimalGallery, darkmodedesign, siteofsites, admiretheweb, bestwebsitegallery, typewolf, hoverstates, siiimple, landinglove, ecommdesign, brutalistwebsites, footerdesign, mindsparklemag, deadsimplesites, landingfolio, csswinner, navbargallery, designnominees, semplice, webdesignclip, csslight, details, saaspages, saaslandingpage, sitesee, landinggallery, cssline, orpetron, unmatchedstyle, a1gallery, seesaw, landingsdev, pricingpages];
+export const GALLERIES = [awwwards, cssdesignawards, refero, onepagelove, curated, httpster, cssnectar, minimalGallery, darkmodedesign, siteofsites, admiretheweb, bestwebsitegallery, typewolf, hoverstates, siiimple, landinglove, ecommdesign, brutalistwebsites, footerdesign, mindsparklemag, deadsimplesites, landingfolio, csswinner, navbargallery, designnominees, semplice, webdesignclip, csslight, details, saaspages, saaslandingpage, sitesee, landinggallery, cssline, orpetron, unmatchedstyle, a1gallery, seesaw, landingsdev, pricingpages, typio];
