@@ -47,8 +47,8 @@ runs at most `--max-queries` (default 30) queries per run.
 `--limit` caps the new sites a run adds. Sites already in the library do not
 count toward it, so each run reads past the gallery entries earlier runs took,
 up to ten times the limit in candidates. Refero, Site of Sites, Details Inspo, SiteSee
-Landing Gallery and A1 Gallery are read from their sitemaps, and they, Admire the Web,
-Typewolf, SaaS Pages, Orpetron, Unmatched Style and See*Saw skip the detail pages already stored
+Landing Gallery, A1 Gallery and Landings are read from their sitemaps, and they, Admire the Web,
+Typewolf, SaaS Pages, Orpetron, Unmatched Style, See*Saw and Landings skip the detail pages already stored
 as a site's source.
 
 | Adapter | Status |
@@ -91,6 +91,7 @@ as a site's source.
 | Unmatched Style (gallery) | working, read from its WordPress API newest first, one post fetched per new site, categories mapped to industry |
 | A1 Gallery | working, read from its sitemap newest first, one page fetched per new site, templates skipped, type and category mapped to industry |
 | See*Saw | working, read from its home page newest first, one page fetched per new site, categories mapped to industry |
+| Landings (landings.dev) | working, read from its sitemap newest first, one page fetched per new site, every site tagged SaaS |
 | Godly | not adapted: redirects to recent.design, a client-rendered app |
 | The FWA | not adapted: client-rendered |
 | Land-book, Lapa Ninja, Web Design Inspiration, Saaspo, Maxibestof | not adapted: 403 behind a bot challenge |
