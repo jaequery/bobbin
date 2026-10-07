@@ -179,8 +179,10 @@ export async function judgeSite(siteOrId, { dryRun = false } = {}) {
   const now = new Date().toISOString();
   const notes = { scores: judgement.scores, reasons: judgement.verdict_reasons, model: judgeModel(), min_quality: minQuality() };
   if (!judgement.capture_ok) {
+    // A bad capture counts as a capture attempt, so `--retry-failed` gives up
+    // on a site whose captures keep coming out wrong instead of retrying forever.
     await upsertSite({
-      domain: site.domain, status, lastError: "bad_capture", judgedAt: now,
+      domain: site.domain, status, lastError: "bad_capture", judgedAt: now, attempts: (site.attempts ?? 0) + 1,
       qualityNotes: JSON.stringify({ ...notes, capture_problem: judgement.capture_problem }),
     });
   } else {

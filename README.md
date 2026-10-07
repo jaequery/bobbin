@@ -237,14 +237,15 @@ that suit your machine and AI budget.
 ### On Vercel Cron
 
 Production also runs the pipeline itself: `vercel.json` calls
-`/api/cron/pipeline` every 2 hours. Each run discovers more sites when fewer
-than 12 wait for capture, then takes up to 4 sites, one at a time and with at
-most 4 subpages each, through the pipeline with
-serverless Chromium (`@sparticuz/chromium`) and the judge on AI Gateway via
-OIDC. It stops claiming after 5 minutes so an in-flight site finishes within the
-800-second limit. The route answers 404 unless called with
-`Authorization: Bearer $CRON_SECRET`. On Vercel `JETHRO_DATA_DIR` is
-`/tmp/jethro` (logs only); run logs are in the function logs and `events`.
+`/api/cron/pipeline` every 30 minutes. Each run first pulls up to 15 new sites
+from the galleries (for at most 90 seconds), then takes up to 6 sites, one at a
+time and with at most 4 subpages each, through the pipeline with serverless
+Chromium (`@sparticuz/chromium`) and the judge on AI Gateway. It stops claiming
+after 5 minutes so an in-flight site finishes within the 800-second limit. The
+route answers 404 unless called with `Authorization: Bearer $CRON_SECRET`. On
+Vercel `JETHRO_DATA_DIR` is `/tmp/jethro` (logs only); run logs are in the
+function logs and `events`. A bad capture counts as a capture attempt, so a
+site whose captures keep failing is retried at most 3 times.
 Change the batch in `app/api/cron/pipeline/route.js` and the schedule in
 `vercel.json`.
 

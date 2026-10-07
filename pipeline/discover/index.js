@@ -62,8 +62,9 @@ export async function addCandidate(candidate, source) {
 // sources: subset of SOURCES; only: a single adapter name; limit: max new sites
 // inserted. Known sites do not count toward it, so galleries are read past the
 // entries earlier runs already took, up to `maxReads` candidates in all.
-// Returns { found, inserted, skipped }.
-export async function discover({ sources = SOURCES, only, limit = 200, maxReads = limit * 10, maxQueries, urls, file, log = console.log } = {}) {
+// `until` (ms since epoch) stops it after the candidate in hand once that time
+// passes. Returns { found, inserted, skipped }.
+export async function discover({ sources = SOURCES, only, limit = 200, maxReads = limit * 10, maxQueries, urls, file, until, log = console.log } = {}) {
   const adapters = adaptersFor(sources, only);
   if (!adapters.length) throw new Error(`no adapter matches ${only ? `--only ${only}` : sources.join(", ")}`);
   const counts = { found: 0, inserted: 0, skipped: 0 };
@@ -80,7 +81,7 @@ export async function discover({ sources = SOURCES, only, limit = 200, maxReads 
       counts.skipped++;
       if (result !== "known") log(`  skip ${candidate.url}: ${result}`);
     }
-    if (counts.inserted >= limit || counts.found >= maxReads) break;
+    if (counts.inserted >= limit || counts.found >= maxReads || (until && Date.now() > until)) break;
   }
   for (const [name, t] of Object.entries(perAdapter)) log(`[${name}] found ${t.found}, inserted ${t.inserted}`);
   return counts;
