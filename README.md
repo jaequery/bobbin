@@ -92,6 +92,7 @@ as a site's source.
 | A1 Gallery | working, read from its sitemap newest first, one page fetched per new site, templates skipped, type and category mapped to industry |
 | See*Saw | working, read from its home page newest first, one page fetched per new site, categories mapped to industry |
 | Landings (landings.dev) | working, read from its sitemap newest first, one page fetched per new site, every site tagged SaaS |
+| Pricing Pages | working, pricing page links reduced to the site, every site tagged SaaS |
 | Godly | not adapted: redirects to recent.design, a client-rendered app |
 | The FWA | not adapted: client-rendered |
 | Land-book, Lapa Ninja, Web Design Inspiration, Saaspo, Maxibestof | not adapted: 403 behind a bot challenge |
@@ -112,6 +113,9 @@ as a site's source.
 | DesignRush, Web Design Museum | not adapted: 403 behind a bot challenge |
 | Websitevice | not adapted: small category pages of mixed quality; robots.txt asks a 10-second crawl delay |
 | Minimalissimo | not adapted: features product and interior design, not websites |
+| Page Collective | not adapted: app flows and screens, not sites |
+| SaaS Websites | not adapted: no outbound site links |
+| GSAP showcase, Bento Grids | not adapted: client-rendered |
 | Brave Search | working; skipped with a notice when `BRAVE_API_KEY` is unset |
 
 ## Capture a site
