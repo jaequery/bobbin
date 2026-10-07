@@ -8,7 +8,8 @@
 // site link is only on each detail page), CSS Reel (now a casino affiliate page),
 // Unsection (lists sections, not sites; the site link is only on each section page),
 // Framer's community gallery (?page= is ignored; later items load client-side),
-// Supahero (hero sections, now folded into screensdesign.com).
+// Supahero (hero sections, now folded into screensdesign.com), Made in Webflow and
+// SaaSFrame (no outbound site links in the served HTML), CSSMania (links behind bit.ly).
 import * as awwwards from "./awwwards.js";
 import * as cssdesignawards from "./cssdesignawards.js";
 import * as refero from "./refero.js";
@@ -37,5 +38,7 @@ import * as designnominees from "./designnominees.js";
 import * as semplice from "./semplice.js";
 import * as webdesignclip from "./webdesignclip.js";
 import * as csslight from "./csslight.js";
+import * as details from "./details.js";
+import * as saaspages from "./saaspages.js";
 
-export const GALLERIES = [awwwards, cssdesignawards, refero, onepagelove, curated, httpster, cssnectar, minimalGallery, darkmodedesign, siteofsites, admiretheweb, bestwebsitegallery, typewolf, hoverstates, siiimple, landinglove, ecommdesign, brutalistwebsites, footerdesign, mindsparklemag, deadsimplesites, landingfolio, csswinner, navbargallery, designnominees, semplice, webdesignclip, csslight];
+export const GALLERIES = [awwwards, cssdesignawards, refero, onepagelove, curated, httpster, cssnectar, minimalGallery, darkmodedesign, siteofsites, admiretheweb, bestwebsitegallery, typewolf, hoverstates, siiimple, landinglove, ecommdesign, brutalistwebsites, footerdesign, mindsparklemag, deadsimplesites, landingfolio, csswinner, navbargallery, designnominees, semplice, webdesignclip, csslight, details, saaspages];
