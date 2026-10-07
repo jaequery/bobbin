@@ -69,6 +69,8 @@ as a site's source.
 | Siiimple | working |
 | Landing Love | working, category mapped to industry |
 | ecomm.design | working, every site tagged E-commerce |
+| Brutalist Websites | working, one page lists every site newest first |
+| Footer.design | working |
 | Godly | not adapted: redirects to recent.design, a client-rendered app |
 | The FWA | not adapted: client-rendered |
 | Land-book, Lapa Ninja, Web Design Inspiration, Saaspo, Maxibestof | not adapted: 403 behind a bot challenge |

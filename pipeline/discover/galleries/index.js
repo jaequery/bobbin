@@ -23,5 +23,7 @@ import * as hoverstates from "./hoverstates.js";
 import * as siiimple from "./siiimple.js";
 import * as landinglove from "./landinglove.js";
 import * as ecommdesign from "./ecommdesign.js";
+import * as brutalistwebsites from "./brutalistwebsites.js";
+import * as footerdesign from "./footerdesign.js";
 
-export const GALLERIES = [awwwards, cssdesignawards, refero, onepagelove, curated, httpster, cssnectar, minimalGallery, darkmodedesign, siteofsites, admiretheweb, bestwebsitegallery, typewolf, hoverstates, siiimple, landinglove, ecommdesign];
+export const GALLERIES = [awwwards, cssdesignawards, refero, onepagelove, curated, httpster, cssnectar, minimalGallery, darkmodedesign, siteofsites, admiretheweb, bestwebsitegallery, typewolf, hoverstates, siiimple, landinglove, ecommdesign, brutalistwebsites, footerdesign];
