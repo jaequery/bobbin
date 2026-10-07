@@ -71,6 +71,8 @@ as a site's source.
 | ecomm.design | working, every site tagged E-commerce |
 | Brutalist Websites | working, one page lists every site newest first |
 | Footer.design | working |
+| Mindsparkle Mag | working, read from its sitemap newest first, one post fetched per new site, category mapped to industry |
+| Dead Simple Sites | working, one page lists every site newest first |
 | Godly | not adapted: redirects to recent.design, a client-rendered app |
 | The FWA | not adapted: client-rendered |
 | Land-book, Lapa Ninja, Web Design Inspiration, Saaspo, Maxibestof | not adapted: 403 behind a bot challenge |
