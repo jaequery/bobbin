@@ -23,7 +23,7 @@ const MAX_ATTEMPTS = 3;
 
 export const DEFAULTS = {
   discover: false, sources: ["galleries", "search"], discoverLimit: 200,
-  limit: 25, concurrency: 3, maxJudge: 100, subpages: 8,
+  limit: 25, concurrency: 3, maxJudge: 100, subpages: 8, discoverMs: null,
   recaptureOlderThan: null, retryFailed: false, pruneRejected: false, dryRun: false,
 };
 
@@ -137,7 +137,8 @@ export async function runPipeline(options = {}, { signal } = {}) {
   if (opts.discover && !signal?.aborted) {
     log(`discovering from ${opts.sources.join(", ")}…`);
     try {
-      const d = await discover({ sources: opts.sources, limit: opts.discoverLimit, log: (line) => log(`  ${line.trim()}`) });
+      const until = opts.discoverMs ? Date.now() + opts.discoverMs : undefined;
+      const d = await discover({ sources: opts.sources, limit: opts.discoverLimit, until, log: (line) => log(`  ${line.trim()}`) });
       totals.discovered = d.inserted;
       log(`discovery: found ${d.found}, inserted ${d.inserted}, skipped ${d.skipped}`, { event: "discovered", ...d });
     } catch (err) {
