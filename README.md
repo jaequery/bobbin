@@ -65,6 +65,8 @@ as a site's source.
 | Admire the Web | working, one detail page fetched per new site |
 | Best Website Gallery | working |
 | Typewolf (Site of the Day) | working, one detail page fetched per new site |
+| Hover States | working, read from its archive data newest first |
+| Siiimple | working |
 | Godly | not adapted: redirects to recent.design, a client-rendered app |
 | The FWA | not adapted: client-rendered |
 | Land-book, Lapa Ninja, Web Design Inspiration, Saaspo, Maxibestof | not adapted: 403 behind a bot challenge |
