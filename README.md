@@ -47,8 +47,8 @@ runs at most `--max-queries` (default 30) queries per run.
 `--limit` caps the new sites a run adds. Sites already in the library do not
 count toward it, so each run reads past the gallery entries earlier runs took,
 up to ten times the limit in candidates. Refero, Site of Sites, Details Inspo, SiteSee
-and Landing Gallery are read from their sitemaps, and they, Admire the Web, Typewolf
-and SaaS Pages skip the detail pages already stored as a site's source.
+and Landing Gallery are read from their sitemaps, and they, Admire the Web, Typewolf,
+SaaS Pages and Orpetron skip the detail pages already stored as a site's source.
 
 | Adapter | Status |
 | --- | --- |
@@ -85,6 +85,8 @@ and SaaS Pages skip the detail pages already stored as a site's source.
 | SaaS Landing Page | working, tags mapped to industry, falling back to SaaS |
 | SiteSee | working, read from its sitemap newest first, one page fetched per new site, tags mapped to industry |
 | Landing Gallery | working, read from its sitemap newest first, one page fetched per new site |
+| CSSline | working |
+| Orpetron (awarded and nominated sites) | working, one detail page fetched per new site |
 | Godly | not adapted: redirects to recent.design, a client-rendered app |
 | The FWA | not adapted: client-rendered |
 | Land-book, Lapa Ninja, Web Design Inspiration, Saaspo, Maxibestof | not adapted: 403 behind a bot challenge |
@@ -97,6 +99,9 @@ and SaaS Pages skip the detail pages already stored as a site's source.
 | CSSMania | not adapted: every site link goes through bit.ly |
 | Web Guru Awards | not adapted: the winners list pages and site pages render client-side |
 | bestcss.in | not adapted: mostly agency and local-business submissions |
+| Muzli | not adapted: its inspiration is articles and shots, not a list of sites |
+| DesignMunk | not adapted: no outbound site links |
+| Pafolios | not adapted: client-rendered |
 | Brave Search | working; skipped with a notice when `BRAVE_API_KEY` is unset |
 
 ## Capture a site
