@@ -93,6 +93,7 @@ as a site's source.
 | See*Saw | working, read from its home page newest first, one page fetched per new site, categories mapped to industry |
 | Landings (landings.dev) | working, read from its sitemap newest first, one page fetched per new site, every site tagged SaaS |
 | Pricing Pages | working, pricing page links reduced to the site, every site tagged SaaS |
+| Typ.io | working, typography sample links reduced to the site, tags mapped to industry |
 | Godly | not adapted: redirects to recent.design, a client-rendered app |
 | The FWA | not adapted: client-rendered |
 | Land-book, Lapa Ninja, Web Design Inspiration, Saaspo, Maxibestof | not adapted: 403 behind a bot challenge |
@@ -116,6 +117,10 @@ as a site's source.
 | Page Collective | not adapted: app flows and screens, not sites |
 | SaaS Websites | not adapted: no outbound site links |
 | GSAP showcase, Bento Grids | not adapted: client-rendered |
+| Call to Inspiration, Communication Arts Webpicks | not adapted: client-rendered |
+| Web Design Awards (webdesignawards.io) | not adapted: paid submissions, mostly agencies and local businesses |
+| Fonts In Use | not adapted: robots.txt asks a 10-second crawl delay |
+| UI UX Showcase | not adapted: mostly design resources and tools, not sites |
 | Brave Search | working; skipped with a notice when `BRAVE_API_KEY` is unset |
 
 ## Capture a site
