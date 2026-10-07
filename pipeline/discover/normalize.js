@@ -10,7 +10,8 @@ export const BLOCKLIST = Object.freeze([
   "lapa.ninja", "onepagelove.com", "httpster.net", "minimal.gallery", "dribbble.com",
   "behance.net", "instagram.com", "twitter.com", "x.com", "linkedin.com", "youtube.com",
   "medium.com", "github.com", "figma.com", "facebook.com", "pinterest.com", "tiktok.com",
-  "reddit.com", "wikipedia.org", "mobbin.com",
+  "reddit.com", "wikipedia.org", "mobbin.com", "cssdesignawards.com", "cssnectar.com",
+  "curated.design", "darkmodedesign.com", "refero.design",
 ]);
 
 // Link shorteners and ad trackers whose real target is behind a redirect.

@@ -17,14 +17,12 @@ function adaptersFor(sources, only) {
   return only ? list.filter((a) => a.name === only) : list;
 }
 
-// Pulls from every adapter in turn until `limit` candidates are found, so one
-// slow or exhausted gallery does not starve the rest.
+// Pulls from every adapter in turn, so one slow or exhausted gallery does not
+// starve the rest. The caller stops it once it has what it needs.
 async function* interleave(adapters, opts) {
   const live = adapters.map((a) => ({ name: a.name, it: a.listing(opts)[Symbol.asyncIterator]() }));
-  let found = 0;
-  while (live.length && found < opts.limit) {
+  while (live.length) {
     for (const entry of [...live]) {
-      if (found >= opts.limit) return;
       let step;
       try {
         step = await entry.it.next();
@@ -37,7 +35,6 @@ async function* interleave(adapters, opts) {
         live.splice(live.indexOf(entry), 1);
         continue;
       }
-      found++;
       yield { adapter: entry.name, ...step.value };
     }
   }
@@ -62,14 +59,16 @@ export async function addCandidate(candidate, source) {
   return "inserted";
 }
 
-// sources: subset of SOURCES; only: a single adapter name; limit: max candidates
-// read across all adapters. Returns { found, inserted, skipped }.
-export async function discover({ sources = SOURCES, only, limit = 200, maxQueries, urls, file, log = console.log } = {}) {
+// sources: subset of SOURCES; only: a single adapter name; limit: max new sites
+// inserted. Known sites do not count toward it, so galleries are read past the
+// entries earlier runs already took, up to `maxReads` candidates in all.
+// Returns { found, inserted, skipped }.
+export async function discover({ sources = SOURCES, only, limit = 200, maxReads = limit * 10, maxQueries, urls, file, log = console.log } = {}) {
   const adapters = adaptersFor(sources, only);
   if (!adapters.length) throw new Error(`no adapter matches ${only ? `--only ${only}` : sources.join(", ")}`);
   const counts = { found: 0, inserted: 0, skipped: 0 };
   const perAdapter = {};
-  for await (const candidate of interleave(adapters, { limit, maxQueries, urls, file })) {
+  for await (const candidate of interleave(adapters, { limit: maxReads, maxQueries, urls, file })) {
     counts.found++;
     const tally = (perAdapter[candidate.adapter] ??= { found: 0, inserted: 0 });
     tally.found++;
@@ -81,6 +80,7 @@ export async function discover({ sources = SOURCES, only, limit = 200, maxQuerie
       counts.skipped++;
       if (result !== "known") log(`  skip ${candidate.url}: ${result}`);
     }
+    if (counts.inserted >= limit || counts.found >= maxReads) break;
   }
   for (const [name, t] of Object.entries(perAdapter)) log(`[${name}] found ${t.found}, inserted ${t.inserted}`);
   return counts;
