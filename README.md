@@ -46,9 +46,9 @@ runs at most `--max-queries` (default 30) queries per run.
 
 `--limit` caps the new sites a run adds. Sites already in the library do not
 count toward it, so each run reads past the gallery entries earlier runs took,
-up to ten times the limit in candidates. Refero and Site of Sites are read from
-their sitemaps, and they, Admire the Web and Typewolf skip the detail pages already stored
-as a site's source.
+up to ten times the limit in candidates. Refero, Site of Sites and Details Inspo are
+read from their sitemaps, and they, Admire the Web, Typewolf and SaaS Pages skip the
+detail pages already stored as a site's source.
 
 | Adapter | Status |
 | --- | --- |
@@ -80,6 +80,8 @@ as a site's source.
 | Semplice Showcase | working, one page lists every site |
 | Web Design Clip | working, category mapped to industry |
 | CSS Light (featured sites) | working |
+| Details Inspo (formerly inspo.page) | working, read from its sitemap, one page fetched per new site, industry tag mapped |
+| SaaS Pages | working, one detail page fetched per new site, every site tagged SaaS |
 | Godly | not adapted: redirects to recent.design, a client-rendered app |
 | The FWA | not adapted: client-rendered |
 | Land-book, Lapa Ninja, Web Design Inspiration, Saaspo, Maxibestof | not adapted: 403 behind a bot challenge |
@@ -89,6 +91,8 @@ as a site's source.
 | Unsection | not adapted: lists sections, not sites; the site link is only on each section page |
 | Framer community gallery | not adapted: `?page=` is ignored and later items load client-side |
 | Supahero | not adapted: hero sections only, now folded into screensdesign.com |
+| Made in Webflow, SaaSFrame | not adapted: no outbound site links in the served HTML |
+| CSSMania | not adapted: every site link goes through bit.ly |
 | Brave Search | working; skipped with a notice when `BRAVE_API_KEY` is unset |
 
 ## Capture a site
