@@ -27,5 +27,8 @@ import * as brutalistwebsites from "./brutalistwebsites.js";
 import * as footerdesign from "./footerdesign.js";
 import * as mindsparklemag from "./mindsparklemag.js";
 import * as deadsimplesites from "./deadsimplesites.js";
+import * as landingfolio from "./landingfolio.js";
+import * as csswinner from "./csswinner.js";
+import * as navbargallery from "./navbargallery.js";
 
-export const GALLERIES = [awwwards, cssdesignawards, refero, onepagelove, curated, httpster, cssnectar, minimalGallery, darkmodedesign, siteofsites, admiretheweb, bestwebsitegallery, typewolf, hoverstates, siiimple, landinglove, ecommdesign, brutalistwebsites, footerdesign, mindsparklemag, deadsimplesites];
+export const GALLERIES = [awwwards, cssdesignawards, refero, onepagelove, curated, httpster, cssnectar, minimalGallery, darkmodedesign, siteofsites, admiretheweb, bestwebsitegallery, typewolf, hoverstates, siiimple, landinglove, ecommdesign, brutalistwebsites, footerdesign, mindsparklemag, deadsimplesites, landingfolio, csswinner, navbargallery];
