@@ -44,15 +44,27 @@ npm run seed -- --file seeds.example.txt
 reads `seeds.txt`, else `seeds.example.txt`, unless `--file` is given. Search
 runs at most `--max-queries` (default 30) queries per run.
 
+`--limit` caps the new sites a run adds. Sites already in the library do not
+count toward it, so each run reads past the gallery entries earlier runs took,
+up to ten times the limit in candidates. Refero is read from its sitemap and
+skips the style pages already stored as a site's source.
+
 | Adapter | Status |
 | --- | --- |
 | Awwwards (Sites of the Day) | working |
+| CSS Design Awards (website gallery) | working |
+| Refero Styles | working, one style page fetched per new site |
 | One Page Love | working, genre mapped to industry |
+| Curated | working |
 | Httpster | working |
+| CSS Nectar | working |
 | Minimal Gallery | working |
+| Dark Mode Design | working |
 | Godly | not adapted: redirects to recent.design, a client-rendered app |
-| Land-book, Lapa Ninja | not adapted: 403 behind a bot challenge |
-| SiteInspire | not adapted: 429 to plain requests |
+| The FWA | not adapted: client-rendered |
+| Land-book, Lapa Ninja, Web Design Inspiration | not adapted: 403 behind a bot challenge |
+| SiteInspire | not adapted: 403/429 to plain requests |
+| SaaS Landing Page | not adapted: the site link is only on each detail page |
 | Brave Search | working; skipped with a notice when `BRAVE_API_KEY` is unset |
 
 ## Capture a site
@@ -125,7 +137,7 @@ npm run pipeline:status                       # sites per status and the last 10
 | --- | --- | --- |
 | `--discover` | off | run discovery before claiming sites |
 | `--sources` | `galleries,search` | discovery sources (`galleries`, `search`, `seeds`) |
-| `--discover-limit` | 200 | candidates discovery reads |
+| `--discover-limit` | 200 | new sites discovery adds |
 | `--limit` | 25 | sites advanced this run |
 | `--concurrency` | 3 | sites in parallel |
 | `--max-judge` | 100 | AI calls (judge + tag) this run |

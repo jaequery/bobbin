@@ -3,10 +3,17 @@
 // { url, name?, industryHint?, countryHint?, sourceRef }.
 //
 // Not yet adapted: Godly (now redirects to recent.design, a client-rendered app),
-// Land-book and Lapa Ninja (403 behind a bot challenge), SiteInspire (429).
+// The FWA (client-rendered), Land-book, Lapa Ninja and Web Design Inspiration
+// (403 behind a bot challenge), SiteInspire (403/429), SaaS Landing Page (the
+// site link is only on each detail page).
 import * as awwwards from "./awwwards.js";
+import * as cssdesignawards from "./cssdesignawards.js";
+import * as refero from "./refero.js";
 import * as onepagelove from "./onepagelove.js";
+import * as curated from "./curated.js";
 import * as httpster from "./httpster.js";
+import * as cssnectar from "./cssnectar.js";
 import * as minimalGallery from "./minimal-gallery.js";
+import * as darkmodedesign from "./darkmodedesign.js";
 
-export const GALLERIES = [awwwards, onepagelove, httpster, minimalGallery];
+export const GALLERIES = [awwwards, cssdesignawards, refero, onepagelove, curated, httpster, cssnectar, minimalGallery, darkmodedesign];
