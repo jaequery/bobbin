@@ -78,6 +78,8 @@ as a site's source.
 | Navbar Gallery | working |
 | Design Nominees (Sites of the Day) | working |
 | Semplice Showcase | working, one page lists every site |
+| Web Design Clip | working, category mapped to industry |
+| CSS Light (featured sites) | working |
 | Godly | not adapted: redirects to recent.design, a client-rendered app |
 | The FWA | not adapted: client-rendered |
 | Land-book, Lapa Ninja, Web Design Inspiration, Saaspo, Maxibestof | not adapted: 403 behind a bot challenge |
@@ -85,6 +87,8 @@ as a site's source.
 | SaaS Landing Page | not adapted: the site link is only on each detail page |
 | CSS Reel | not adapted: now a casino affiliate page |
 | Unsection | not adapted: lists sections, not sites; the site link is only on each section page |
+| Framer community gallery | not adapted: `?page=` is ignored and later items load client-side |
+| Supahero | not adapted: hero sections only, now folded into screensdesign.com |
 | Brave Search | working; skipped with a notice when `BRAVE_API_KEY` is unset |
 
 ## Capture a site

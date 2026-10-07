@@ -6,7 +6,9 @@
 // The FWA (client-rendered), Land-book, Lapa Ninja, Web Design Inspiration,
 // Saaspo and Maxibestof (403 behind a bot challenge), SiteInspire (403/429), SaaS Landing Page (the
 // site link is only on each detail page), CSS Reel (now a casino affiliate page),
-// Unsection (lists sections, not sites; the site link is only on each section page).
+// Unsection (lists sections, not sites; the site link is only on each section page),
+// Framer's community gallery (?page= is ignored; later items load client-side),
+// Supahero (hero sections, now folded into screensdesign.com).
 import * as awwwards from "./awwwards.js";
 import * as cssdesignawards from "./cssdesignawards.js";
 import * as refero from "./refero.js";
@@ -33,5 +35,7 @@ import * as csswinner from "./csswinner.js";
 import * as navbargallery from "./navbargallery.js";
 import * as designnominees from "./designnominees.js";
 import * as semplice from "./semplice.js";
+import * as webdesignclip from "./webdesignclip.js";
+import * as csslight from "./csslight.js";
 
-export const GALLERIES = [awwwards, cssdesignawards, refero, onepagelove, curated, httpster, cssnectar, minimalGallery, darkmodedesign, siteofsites, admiretheweb, bestwebsitegallery, typewolf, hoverstates, siiimple, landinglove, ecommdesign, brutalistwebsites, footerdesign, mindsparklemag, deadsimplesites, landingfolio, csswinner, navbargallery, designnominees, semplice];
+export const GALLERIES = [awwwards, cssdesignawards, refero, onepagelove, curated, httpster, cssnectar, minimalGallery, darkmodedesign, siteofsites, admiretheweb, bestwebsitegallery, typewolf, hoverstates, siiimple, landinglove, ecommdesign, brutalistwebsites, footerdesign, mindsparklemag, deadsimplesites, landingfolio, csswinner, navbargallery, designnominees, semplice, webdesignclip, csslight];
