@@ -67,6 +67,8 @@ as a site's source.
 | Typewolf (Site of the Day) | working, one detail page fetched per new site |
 | Hover States | working, read from its archive data newest first |
 | Siiimple | working |
+| Landing Love | working, category mapped to industry |
+| ecomm.design | working, every site tagged E-commerce |
 | Godly | not adapted: redirects to recent.design, a client-rendered app |
 | The FWA | not adapted: client-rendered |
 | Land-book, Lapa Ninja, Web Design Inspiration, Saaspo, Maxibestof | not adapted: 403 behind a bot challenge |
