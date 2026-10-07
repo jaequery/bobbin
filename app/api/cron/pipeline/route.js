@@ -8,14 +8,16 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 800;
 const STOP_CLAIMING_MS = 300 * 1000;
 
-// Each run: refill the queue from discovery when it runs low, then take a few
-// sites through capture → judge → subpages → tags, one at a time (a function
-// has no GPU and little CPU, so a page takes about a minute). Fewer subpages
-// than a local run keep an approved site within one run. The schedule in
-// vercel.json sets how often it runs. Claims are atomic, so a run
+// Each run: pull a few new sites from the galleries (time-boxed, so a slow
+// gallery cannot eat the run), then take a few sites through capture → judge →
+// subpages → tags, one at a time (a function has no GPU and little CPU, so a
+// page takes about a minute). Fewer subpages than a local run keep an approved
+// site within one run. The schedule in vercel.json sets how often it runs. Claims are atomic, so a run
 // that overlaps another (or a local `npm run pipeline`) never doubles up.
-const RUN = { limit: 4, concurrency: 1, maxJudge: 8, subpages: 4, discoverLimit: 30, retryFailed: true };
-const LOW_QUEUE = 12;
+const RUN = {
+  discover: true, discoverLimit: 15, discoverMs: 90 * 1000,
+  limit: 6, concurrency: 1, maxJudge: 12, subpages: 4, retryFailed: true,
+};
 
 // Vercel Cron calls this with `Authorization: Bearer $CRON_SECRET`.
 export async function GET(request) {
@@ -24,6 +26,6 @@ export async function GET(request) {
     return new Response("Not found", { status: 404 });
   }
   const queued = (await queueCounts()).capture;
-  const totals = await runPipeline({ ...RUN, discover: queued < LOW_QUEUE }, { signal: AbortSignal.timeout(STOP_CLAIMING_MS) });
+  const totals = await runPipeline(RUN, { signal: AbortSignal.timeout(STOP_CLAIMING_MS) });
   return Response.json({ data: { queued, ...totals } }, { headers: { "Cache-Control": "no-store" } });
 }
