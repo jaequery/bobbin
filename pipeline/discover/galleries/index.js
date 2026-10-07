@@ -11,7 +11,8 @@
 // Supahero (hero sections, now folded into screensdesign.com), Made in Webflow and
 // SaaSFrame (no outbound site links in the served HTML), CSSMania (links behind bit.ly),
 // Web Guru Awards (winners page and site pages render client-side), bestcss.in
-// (mostly agency and local-business submissions).
+// (mostly agency and local-business submissions), Muzli (inspiration is articles and
+// shots, not a site list), DesignMunk (no outbound site links), Pafolios (client-rendered).
 import * as awwwards from "./awwwards.js";
 import * as cssdesignawards from "./cssdesignawards.js";
 import * as refero from "./refero.js";
@@ -45,5 +46,7 @@ import * as saaspages from "./saaspages.js";
 import * as saaslandingpage from "./saaslandingpage.js";
 import * as sitesee from "./sitesee.js";
 import * as landinggallery from "./landinggallery.js";
+import * as cssline from "./cssline.js";
+import * as orpetron from "./orpetron.js";
 
-export const GALLERIES = [awwwards, cssdesignawards, refero, onepagelove, curated, httpster, cssnectar, minimalGallery, darkmodedesign, siteofsites, admiretheweb, bestwebsitegallery, typewolf, hoverstates, siiimple, landinglove, ecommdesign, brutalistwebsites, footerdesign, mindsparklemag, deadsimplesites, landingfolio, csswinner, navbargallery, designnominees, semplice, webdesignclip, csslight, details, saaspages, saaslandingpage, sitesee, landinggallery];
+export const GALLERIES = [awwwards, cssdesignawards, refero, onepagelove, curated, httpster, cssnectar, minimalGallery, darkmodedesign, siteofsites, admiretheweb, bestwebsitegallery, typewolf, hoverstates, siiimple, landinglove, ecommdesign, brutalistwebsites, footerdesign, mindsparklemag, deadsimplesites, landingfolio, csswinner, navbargallery, designnominees, semplice, webdesignclip, csslight, details, saaspages, saaslandingpage, sitesee, landinggallery, cssline, orpetron];
