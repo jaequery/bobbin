@@ -17,5 +17,7 @@ import * as minimalGallery from "./minimal-gallery.js";
 import * as darkmodedesign from "./darkmodedesign.js";
 import * as siteofsites from "./siteofsites.js";
 import * as admiretheweb from "./admiretheweb.js";
+import * as bestwebsitegallery from "./bestwebsitegallery.js";
+import * as typewolf from "./typewolf.js";
 
-export const GALLERIES = [awwwards, cssdesignawards, refero, onepagelove, curated, httpster, cssnectar, minimalGallery, darkmodedesign, siteofsites, admiretheweb];
+export const GALLERIES = [awwwards, cssdesignawards, refero, onepagelove, curated, httpster, cssnectar, minimalGallery, darkmodedesign, siteofsites, admiretheweb, bestwebsitegallery, typewolf];

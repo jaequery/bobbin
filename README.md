@@ -47,7 +47,7 @@ runs at most `--max-queries` (default 30) queries per run.
 `--limit` caps the new sites a run adds. Sites already in the library do not
 count toward it, so each run reads past the gallery entries earlier runs took,
 up to ten times the limit in candidates. Refero and Site of Sites are read from
-their sitemaps, and they and Admire the Web skip the detail pages already stored
+their sitemaps, and they, Admire the Web and Typewolf skip the detail pages already stored
 as a site's source.
 
 | Adapter | Status |
@@ -63,6 +63,8 @@ as a site's source.
 | Dark Mode Design | working |
 | Site of Sites | working, read from its sitemap newest first, one page fetched per new site |
 | Admire the Web | working, one detail page fetched per new site |
+| Best Website Gallery | working |
+| Typewolf (Site of the Day) | working, one detail page fetched per new site |
 | Godly | not adapted: redirects to recent.design, a client-rendered app |
 | The FWA | not adapted: client-rendered |
 | Land-book, Lapa Ninja, Web Design Inspiration, Saaspo, Maxibestof | not adapted: 403 behind a bot challenge |
