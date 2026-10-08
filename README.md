@@ -99,6 +99,9 @@ as a site's source.
 | Webinspoo | working, read from its sitemap newest first, landing pages only, one page fetched per new site, every site tagged SaaS |
 | Astro showcase | working, cards link straight to the site |
 | Nuxt showcase | working, one page lists every site, cards link straight to the site |
+| Lenis showcase | working, read from its sitemap newest first, one page fetched per new site, partner promos skipped |
+| Made with Kirby | working, read from its RSS feed newest first, items link straight to the site |
+| WordPress Showcase | working, read from its WordPress API newest first, two requests for the whole gallery, categories and tags mapped to industry |
 | Wall of Portfolios | working, read from its sitemap newest first, one portfolio page fetched per new site, every site tagged Agency & Portfolio |
 | Godly | not adapted: redirects to recent.design, a client-rendered app |
 | The FWA | not adapted: client-rendered |
@@ -131,6 +134,8 @@ as a site's source.
 | Looks Like Good Design, Framer Websites | not adapted: creative work of every kind, not websites; an agency site, not a gallery |
 | One Page Mania, startups.gallery, Next.js showcase | not adapted: now redirects to an agency site; a startup and jobs directory; only a handful of sites |
 | Gatsby showcase, Shopify examples, Tailwind CSS showcase | not adapted: only a handful of sites in the served HTML; a handful of stores; client-rendered |
+| Three.js showcase, Sanity showcase, Strapi showcases | not adapted: mostly WebGL demos, games and experiments; robots.txt disallows /showcase; mostly small local businesses |
+| Craft CMS showcase | not adapted: now redirects to the home page, whose few links are mostly agency case studies |
 | Cofolios, Bestfolios | not adapted: client-rendered |
 | Brave Search | working; skipped with a notice when `BRAVE_API_KEY` is unset |
 
