@@ -118,6 +118,7 @@ first pages.
 | Wall of Portfolios | working, read from its sitemap newest first, one portfolio page fetched per new site, every site tagged Agency & Portfolio |
 | Osmo showcase | working, one page of about 100 sites, no detail page fetched |
 | Made with Wagtail | working, paged with /page/<n> newest first, cards link straight to the site |
+| Dark Design | working, one page lists every site, cards link straight to the site, categories mapped to industry, sponsored cards skipped |
 | Godly | not adapted: redirects to recent.design, a client-rendered app |
 | The FWA | not adapted: client-rendered |
 | Land-book, Lapa Ninja, Web Design Inspiration, Saaspo, Maxibestof | not adapted: 403 behind a bot challenge |
@@ -161,6 +162,8 @@ first pages.
 | Wix Studio inspiration | not adapted: no site links in the served HTML |
 | Design Made in Germany | not adapted: a design blog and agency directory, not a site gallery |
 | wagtail.org showcase, Design Inspiration | not adapted: a few case studies (Made with Wagtail is its site list); product design, not websites |
+| Drupal case studies | not adapted: robots.txt asks a 10s crawl delay |
+| Cargo examples, Webflow, Builder.io, Concrete CMS, Contao showcases | not adapted: 404 |
 | Elementor and Bricks showcases | not adapted: no site links in the served HTML |
 | October CMS, Grav, Jamstack, Neos, TYPO3, Umbraco showcases | not adapted: 404 |
 | Brave Search | working; skipped with a notice when `BRAVE_API_KEY` is unset |

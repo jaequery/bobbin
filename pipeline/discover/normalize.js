@@ -21,6 +21,7 @@ export const BLOCKLIST = Object.freeze([
   "astro.build", "gatsbyjs.com", "nuxt.com", "lenis.dev", "getkirby.com", "wordpress.org", "statamic.com",
   "muuuuu.org", "wallofportfolios.in",
   "osmo.supply", "madewithwagtail.org",
+  "dark.design",
 ]);
 
 // Link shorteners and ad trackers whose real target is behind a redirect.
