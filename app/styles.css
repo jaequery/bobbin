@@ -140,6 +140,16 @@ svg.i { width: 20px; height: 20px; flex: none; stroke: currentColor; fill: none;
 .pill .x { margin: 0 -6px 0 0; display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; }
 .pill .x:hover { background: var(--line-2); }
 .toolbar .sep { width: 1px; height: 22px; background: var(--line-2); margin: 0 4px; }
+/* Filter menus collapse behind this icon; the pills inside wrap like toolbar items. */
+.filters-toggle { width: 37px; padding: 0; justify-content: center; }
+.filters-toggle[aria-expanded="true"] { background: var(--surface-2); border-color: var(--line-2); }
+.filters-toggle[aria-expanded="true"] svg.i { stroke: var(--accent); }
+.filters-toggle .badge {
+  position: absolute; top: -5px; right: -5px;
+  min-width: 18px; height: 18px; padding: 0 5px; border-radius: var(--r-pill);
+  background: var(--ink); color: var(--bg); font-size: 11.5px; font-weight: 500; line-height: 18px; text-align: center;
+}
+.filter-set { display: contents; }
 .toolbar .count { margin-left: auto; color: var(--mute); font-size: 14px; }
 
 .menu-wrap { position: relative; }
