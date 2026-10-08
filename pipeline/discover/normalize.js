@@ -19,6 +19,7 @@ export const BLOCKLIST = Object.freeze([
   "unmatchedstyle.com", "a1.gallery", "seesaw.website", "landings.dev",
   "pricingpages.design", "typ.io", "404s.design", "killerportfolio.com", "webinspoo.com",
   "astro.build", "nuxt.com", "lenis.dev", "getkirby.com", "wordpress.org", "statamic.com",
+  "madewithwagtail.org", "wagtail.org",
 ]);
 
 // Link shorteners and ad trackers whose real target is behind a redirect.
