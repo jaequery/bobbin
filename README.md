@@ -102,6 +102,7 @@ as a site's source.
 | Lenis showcase | working, read from its sitemap newest first, one page fetched per new site, partner promos skipped |
 | Made with Kirby | working, read from its RSS feed newest first, items link straight to the site |
 | WordPress Showcase | working, read from its WordPress API newest first, two requests for the whole gallery, categories and tags mapped to industry |
+| Statamic Showcase | working, paged with ?page=, one page fetched per new site |
 | Godly | not adapted: redirects to recent.design, a client-rendered app |
 | The FWA | not adapted: client-rendered |
 | Land-book, Lapa Ninja, Web Design Inspiration, Saaspo, Maxibestof | not adapted: 403 behind a bot challenge |
@@ -135,6 +136,8 @@ as a site's source.
 | Gatsby showcase, Shopify examples, Tailwind CSS showcase | not adapted: only a handful of sites in the served HTML; a handful of stores; client-rendered |
 | Three.js showcase, Sanity showcase, Strapi showcases | not adapted: mostly WebGL demos, games and experiments; robots.txt disallows /showcase; mostly small local businesses |
 | Craft CMS showcase | not adapted: now redirects to the home page, whose few links are mostly agency case studies |
+| ProcessWire sites, Readymag examples, Remix showcase | not adapted: no site links in the served HTML |
+| Hugo, Payload, Storyblok, DatoCMS, Directus, Svelte showcases | not adapted: 404 |
 | Brave Search | working; skipped with a notice when `BRAVE_API_KEY` is unset |
 
 ## Capture a site
