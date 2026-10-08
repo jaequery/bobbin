@@ -47,7 +47,7 @@ runs at most `--max-queries` (default 30) queries per run.
 `--limit` caps the new sites a run adds. Sites already in the library do not
 count toward it, so each run reads past the gallery entries earlier runs took,
 up to ten times the limit in candidates. Refero, Site of Sites, Details Inspo, SiteSee
-Landing Gallery, A1 Gallery, Landings, Webinspoo and Wall of Portfolios are read from their sitemaps, and they, Admire the Web,
+Landing Gallery, A1 Gallery, Landings, Webinspoo, Wall of Portfolios and the Gatsby showcase are read from their sitemaps, and they, Admire the Web,
 Typewolf, SaaS Pages, Orpetron, Unmatched Style, See*Saw and Killer Portfolio skip the detail pages already stored
 as a site's source.
 
@@ -107,6 +107,7 @@ first pages.
 | Killer Portfolio | working, one detail page fetched per new site, every site tagged Agency & Portfolio |
 | Webinspoo | working, read from its sitemap newest first, landing pages only, one page fetched per new site, every site tagged SaaS |
 | Astro showcase | working, cards link straight to the site |
+| Gatsby showcase | working, read from its sitemap newest first, one page fetched per new site, categories mapped to industry |
 | Nuxt showcase | working, one page lists every site, cards link straight to the site |
 | Lenis showcase | working, read from its sitemap newest first, one page fetched per new site, partner promos skipped |
 | Made with Kirby | working, read from its RSS feed newest first, items link straight to the site |
@@ -116,7 +117,7 @@ first pages.
 | Awwwards (Honorable Mentions) | working, same card markup as Sites of the Day |
 | Wall of Portfolios | working, read from its sitemap newest first, one portfolio page fetched per new site, every site tagged Agency & Portfolio |
 | Osmo showcase | working, one page of about 100 sites, no detail page fetched |
-| Made with Wagtail | working, paged with /page/<n>/, cards link straight to the site |
+| Made with Wagtail | working, paged with /page/<n> newest first, cards link straight to the site |
 | Godly | not adapted: redirects to recent.design, a client-rendered app |
 | The FWA | not adapted: client-rendered |
 | Land-book, Lapa Ninja, Web Design Inspiration, Saaspo, Maxibestof | not adapted: 403 behind a bot challenge |
@@ -147,7 +148,8 @@ first pages.
 | Light Mode Design, SaaS Interface, Super Creative, Made on Tilda, Portfolio Village | not adapted: now a shop, app screens, a studio site, no outbound site links, not a site gallery |
 | Looks Like Good Design, Framer Websites | not adapted: creative work of every kind, not websites; an agency site, not a gallery |
 | One Page Mania, startups.gallery, Next.js showcase | not adapted: now redirects to an agency site; a startup and jobs directory; only a handful of sites |
-| Gatsby showcase, Shopify examples, Tailwind CSS showcase | not adapted: only a handful of sites in the served HTML; a handful of stores; client-rendered |
+| Design Inspiration (design-inspiration.net), Readymag showcase | not adapted: industrial and product design, not websites; the showcase page is gone (404) |
+| Shopify examples, Tailwind CSS showcase | not adapted: a handful of stores; client-rendered |
 | Three.js showcase, Sanity showcase, Strapi showcases | not adapted: mostly WebGL demos, games and experiments; robots.txt disallows /showcase; mostly small local businesses |
 | Craft CMS showcase | not adapted: now redirects to the home page, whose few links are mostly agency case studies |
 | ProcessWire sites, Readymag examples, Remix showcase | not adapted: no site links in the served HTML |
@@ -158,6 +160,7 @@ first pages.
 | Barba.js showcase | not adapted: read from Firestore behind an encrypted client key |
 | Wix Studio inspiration | not adapted: no site links in the served HTML |
 | Design Made in Germany | not adapted: a design blog and agency directory, not a site gallery |
+| wagtail.org showcase, Design Inspiration | not adapted: a few case studies (Made with Wagtail is its site list); product design, not websites |
 | Brave Search | working; skipped with a notice when `BRAVE_API_KEY` is unset |
 
 ## Capture a site

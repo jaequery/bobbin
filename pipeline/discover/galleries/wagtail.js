@@ -1,8 +1,9 @@
-// Made with Wagtail (madewithwagtail.org), sites built with the Wagtail CMS
-// that its maintainers list, from governments, universities and museums to
-// studios and nonprofits, about 640 in all. Its home page lists them 12 a page,
-// paged with /page/<n>/; each card links straight out to the site and to its
-// /developers/<studio>/<site>/ page, which is the source.
+// Made with Wagtail (madewithwagtail.org), about 620 production sites built with
+// the Wagtail CMS that the Wagtail project reviews before listing, mostly
+// nonprofits, universities, museums, governments and studios. It lists them
+// newest first, paged with /page/<n>, about 12 a page; every card links
+// straight out to the site, and its /developers/<agency>/<slug>/ info page is
+// kept as the source, so no page per site is fetched.
 import { paged } from "./paged.js";
 
 const BASE = "https://madewithwagtail.org";
@@ -14,17 +15,15 @@ export function listing({ limit }) {
     name,
     limit,
     maxPages: 80,
-    pageUrl: (n) => `${BASE}/${n > 1 ? `page/${n}/` : ""}`,
-    parse: ($) =>
-      $(".site-listing .card").map((_, el) => {
-        const card = $(el);
-        const url = card.find("a.project__visit[href^='http']").attr("href");
-        const ref = card.find("a.project__info").attr("href");
-        if (!url) return null;
+    pageUrl: (n) => `${BASE}/${n > 1 ? `page/${n}` : ""}`,
+    parse: ($, pageUrl) =>
+      $(".site-listing a.project__visit[href^='http']").map((_, el) => {
+        const card = $(el).closest(".card").parent();
+        const info = card.find("a.project__info").attr("href");
         return {
-          url,
-          name: card.parent().find(".project-title").first().text().trim() || null,
-          sourceRef: ref ? BASE + ref : BASE,
+          url: $(el).attr("href"),
+          name: card.find(".project-title").first().text().trim() || null,
+          sourceRef: info ? new URL(info, BASE).href : pageUrl,
         };
       }).get(),
   });

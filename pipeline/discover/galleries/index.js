@@ -27,7 +27,8 @@
 // Looks Like Good Design (creative work of every kind, not websites), Framer Websites
 // (an agency site, not a gallery), One Page Mania (now redirects to an agency site),
 // startups.gallery (a startup and jobs directory), Next.js showcase (a handful of sites),
-// Gatsby showcase (only a handful of sites in the served HTML), Shopify examples
+// Design Inspiration (design-inspiration.net, industrial and product design, not
+// websites), Readymag showcase (the page is gone), Shopify examples
 // (a handful of stores), Tailwind CSS showcase (client-rendered), Three.js showcase
 // (mostly WebGL demos, games and experiments, not sites), Sanity's showcase (robots.txt
 // disallows /showcase), Strapi showcases (mostly small local businesses), Craft CMS
@@ -41,7 +42,9 @@
 // projects), Klim's In Use (mostly print),
 // Cofolios and Bestfolios (client-rendered), Barba.js showcase (read from Firestore
 // behind an encrypted client key), Wix Studio inspiration (no site links in the served
-// HTML), Design Made in Germany (a design blog and agency directory, not a site gallery).
+// HTML), Design Made in Germany (a design blog and agency directory, not a site gallery),
+// Wagtail's own showcase (wagtail.org/showcase, a few case studies; Made with Wagtail is
+// its site list), Design Inspiration (design-inspiration.net, product design, not websites).
 import * as awwwards from "./awwwards.js";
 import * as cssdesignawards from "./cssdesignawards.js";
 import * as refero from "./refero.js";
@@ -87,6 +90,7 @@ import * as fourohfours from "./fourohfours.js";
 import * as killerportfolio from "./killerportfolio.js";
 import * as webinspoo from "./webinspoo.js";
 import * as astro from "./astro.js";
+import * as gatsby from "./gatsby.js";
 import * as nuxt from "./nuxt.js";
 import * as lenis from "./lenis.js";
 import * as kirby from "./kirby.js";
@@ -98,4 +102,4 @@ import * as wallofportfolios from "./wallofportfolios.js";
 import * as osmo from "./osmo.js";
 import * as wagtail from "./wagtail.js";
 
-export const GALLERIES = [awwwards, cssdesignawards, refero, onepagelove, curated, httpster, cssnectar, minimalGallery, darkmodedesign, siteofsites, admiretheweb, bestwebsitegallery, typewolf, hoverstates, siiimple, landinglove, ecommdesign, brutalistwebsites, footerdesign, mindsparklemag, deadsimplesites, landingfolio, csswinner, navbargallery, designnominees, semplice, webdesignclip, csslight, details, saaspages, saaslandingpage, sitesee, landinggallery, cssline, orpetron, unmatchedstyle, a1gallery, seesaw, landingsdev, pricingpages, typio, fourohfours, killerportfolio, webinspoo, astro, nuxt, lenis, kirby, wordpress, statamic, muuuuu, awwwardshonorable, wallofportfolios, osmo, wagtail];
+export const GALLERIES = [awwwards, cssdesignawards, refero, onepagelove, curated, httpster, cssnectar, minimalGallery, darkmodedesign, siteofsites, admiretheweb, bestwebsitegallery, typewolf, hoverstates, siiimple, landinglove, ecommdesign, brutalistwebsites, footerdesign, mindsparklemag, deadsimplesites, landingfolio, csswinner, navbargallery, designnominees, semplice, webdesignclip, csslight, details, saaspages, saaslandingpage, sitesee, landinggallery, cssline, orpetron, unmatchedstyle, a1gallery, seesaw, landingsdev, pricingpages, typio, fourohfours, killerportfolio, webinspoo, astro, gatsby, nuxt, lenis, kirby, wordpress, statamic, muuuuu, awwwardshonorable, wallofportfolios, osmo, wagtail];
