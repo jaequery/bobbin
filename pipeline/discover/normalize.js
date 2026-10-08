@@ -38,6 +38,13 @@ function parse(input) {
   }
 }
 
+// The registrable domain `input` would be stored under, without resolving
+// redirects or checking the blocklist; null when it has none.
+export function candidateDomain(input) {
+  const u = parse(String(input).trim());
+  return u ? getDomain(u.hostname.replace(/\.$/, "").replace(/^www\./, ""), { allowPrivateDomains: true }) : null;
+}
+
 // Returns { url, domain } or { refused: reason }.
 // `allowHosted` permits sites on shared hosts (x.framer.website, y.webflow.io);
 // galleries and manual seeds may point there, web search may not.

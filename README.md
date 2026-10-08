@@ -51,9 +51,18 @@ Landing Gallery, A1 Gallery, Landings and Webinspoo are read from their sitemaps
 Typewolf, SaaS Pages, Orpetron, Unmatched Style, See*Saw and Killer Portfolio skip the detail pages already stored
 as a site's source.
 
+Paged galleries (Awwwards, CSS Design Awards, One Page Love, Minimal Gallery,
+CSS Winner and the others read with `?page=` or `/page/<n>`) skip entries whose
+domain or detail page is already stored, so known entries use none of a run's
+reads. Each reads page 1 for new entries and then resumes at the page an earlier
+run reached, kept in the `gallery_cursors` table (`npm run db:migrate` adds it;
+without it they read from page 2). Every run reaches further into an archive,
+such as the roughly 7,400 Awwwards Sites of the Day, instead of re-reading its
+first pages.
+
 | Adapter | Status |
 | --- | --- |
-| Awwwards (Sites of the Day) | working |
+| Awwwards (Sites of the Day) | working, resumes at the page the last run reached |
 | CSS Design Awards (website gallery) | working |
 | Refero Styles | working, one style page fetched per new site |
 | One Page Love | working, genre mapped to industry |
@@ -138,6 +147,8 @@ as a site's source.
 | Craft CMS showcase | not adapted: now redirects to the home page, whose few links are mostly agency case studies |
 | ProcessWire sites, Readymag examples, Remix showcase | not adapted: no site links in the served HTML |
 | Hugo, Payload, Storyblok, DatoCMS, Directus, Svelte showcases | not adapted: 404 |
+| Codrops Inspirational Websites Roundups, Webby Awards winners, Prismic showcase | not adapted: 403 behind a bot challenge; client-rendered; a handful of sites |
+| Made with Vue.js, Made with React, Made with Laravel, Klim In Use | not adapted: mostly apps and side projects; mostly print work |
 | Brave Search | working; skipped with a notice when `BRAVE_API_KEY` is unset |
 
 ## Capture a site

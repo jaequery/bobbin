@@ -34,6 +34,9 @@
 // showcase (now redirects to the home page, whose few links are agency case studies),
 // ProcessWire sites directory, Readymag examples and Remix showcase (no site links in
 // the served HTML), Hugo, Payload, Storyblok, DatoCMS, Directus and Svelte showcases (404).
+// Codrops' Inspirational Websites Roundups (403 behind a bot challenge), Webby Awards
+// winners (client-rendered), Prismic's showcase (a handful of sites), Made with Vue.js,
+// React and Laravel (mostly apps and side projects), Klim's In Use (mostly print).
 import * as awwwards from "./awwwards.js";
 import * as cssdesignawards from "./cssdesignawards.js";
 import * as refero from "./refero.js";
