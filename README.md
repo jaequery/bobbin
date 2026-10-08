@@ -47,7 +47,7 @@ runs at most `--max-queries` (default 30) queries per run.
 `--limit` caps the new sites a run adds. Sites already in the library do not
 count toward it, so each run reads past the gallery entries earlier runs took,
 up to ten times the limit in candidates. Refero, Site of Sites, Details Inspo, SiteSee
-Landing Gallery, A1 Gallery, Landings, Webinspoo and the Gatsby showcase are read from their sitemaps, and they, Admire the Web,
+Landing Gallery, A1 Gallery, Landings, Webinspoo, Wall of Portfolios and the Gatsby showcase are read from their sitemaps, and they, Admire the Web,
 Typewolf, SaaS Pages, Orpetron, Unmatched Style, See*Saw and Killer Portfolio skip the detail pages already stored
 as a site's source.
 
@@ -115,6 +115,7 @@ first pages.
 | Statamic Showcase | working, paged with ?page=, one page fetched per new site |
 | MUUUUU.ORG | working, paged with /page/<n>, cards link straight to the site, industry mapped from the detail path |
 | Awwwards (Honorable Mentions) | working, same card markup as Sites of the Day |
+| Wall of Portfolios | working, read from its sitemap newest first, one portfolio page fetched per new site, every site tagged Agency & Portfolio |
 | Godly | not adapted: redirects to recent.design, a client-rendered app |
 | The FWA | not adapted: client-rendered |
 | Land-book, Lapa Ninja, Web Design Inspiration, Saaspo, Maxibestof | not adapted: 403 behind a bot challenge |
@@ -153,6 +154,7 @@ first pages.
 | Hugo, Payload, Storyblok, DatoCMS, Directus, Svelte showcases | not adapted: 404 |
 | Prismic showcase, Ghost Explore, Site Builder Report, Codrops roundups | not adapted: only a handful of sites in the served HTML; mostly small businesses and affiliate links; 403 behind a bot challenge |
 | Webby Awards winners, Made with Vue.js, Made with React, Made with Laravel, Klim In Use | not adapted: client-rendered; mostly apps and side projects; mostly print work |
+| Cofolios, Bestfolios | not adapted: client-rendered |
 | Brave Search | working; skipped with a notice when `BRAVE_API_KEY` is unset |
 
 ## Capture a site
