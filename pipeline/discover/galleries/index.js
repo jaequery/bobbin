@@ -36,7 +36,9 @@
 // the served HTML), Hugo, Payload, Storyblok, DatoCMS, Directus and Svelte showcases (404),
 // Prismic showcase and Ghost Explore (only a handful of sites in the served HTML),
 // Site Builder Report inspiration (mostly small businesses, many affiliate links),
-// Codrops inspiration roundups (403 behind a bot challenge).
+// Codrops inspiration roundups (403 behind a bot challenge), Webby Awards winners
+// (client-rendered), Made with Vue.js, React and Laravel (mostly apps and side
+// projects), Klim's In Use (mostly print).
 import * as awwwards from "./awwwards.js";
 import * as cssdesignawards from "./cssdesignawards.js";
 import * as refero from "./refero.js";
