@@ -20,6 +20,7 @@ export const BLOCKLIST = Object.freeze([
   "pricingpages.design", "typ.io", "404s.design", "killerportfolio.com", "webinspoo.com",
   "astro.build", "nuxt.com", "lenis.dev", "getkirby.com", "wordpress.org", "statamic.com",
   "muuuuu.org", "wallofportfolios.in",
+  "osmo.supply",
 ]);
 
 // Link shorteners and ad trackers whose real target is behind a redirect.
