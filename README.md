@@ -103,6 +103,7 @@ as a site's source.
 | Made with Kirby | working, read from its RSS feed newest first, items link straight to the site |
 | WordPress Showcase | working, read from its WordPress API newest first, two requests for the whole gallery, categories and tags mapped to industry |
 | Statamic Showcase | working, paged with ?page=, one page fetched per new site |
+| MUUUUU.ORG | working, paged with /page/<n>, cards link straight to the site, industry mapped from the detail path |
 | Osmo showcase | working, one page of about 100 sites, no detail page fetched |
 | Godly | not adapted: redirects to recent.design, a client-rendered app |
 | The FWA | not adapted: client-rendered |
@@ -139,6 +140,7 @@ as a site's source.
 | Craft CMS showcase | not adapted: now redirects to the home page, whose few links are mostly agency case studies |
 | ProcessWire sites, Readymag examples, Remix showcase | not adapted: no site links in the served HTML |
 | Hugo, Payload, Storyblok, DatoCMS, Directus, Svelte showcases | not adapted: 404 |
+| Prismic showcase, Ghost Explore, Site Builder Report, Codrops roundups | not adapted: only a handful of sites in the served HTML; mostly small businesses and affiliate links; 403 behind a bot challenge |
 | Barba.js showcase | not adapted: read from Firestore behind an encrypted client key |
 | Webby Awards winners | not adapted: client-rendered, robots.txt disallows its /api/ |
 | Wix Studio inspiration | not adapted: no site links in the served HTML |
