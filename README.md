@@ -115,6 +115,7 @@ first pages.
 | MUUUUU.ORG | working, paged with /page/<n>, cards link straight to the site, industry mapped from the detail path |
 | Awwwards (Honorable Mentions) | working, same card markup as Sites of the Day |
 | Wall of Portfolios | working, read from its sitemap newest first, one portfolio page fetched per new site, every site tagged Agency & Portfolio |
+| Osmo showcase | working, one page of about 100 sites, no detail page fetched |
 | Made with Wagtail | working, paged with /page/<n> newest first, one page fetched per new site, sector tags mapped to industry |
 | Godly | not adapted: redirects to recent.design, a client-rendered app |
 | The FWA | not adapted: client-rendered |
@@ -154,6 +155,9 @@ first pages.
 | Prismic showcase, Ghost Explore, Site Builder Report, Codrops roundups | not adapted: only a handful of sites in the served HTML; mostly small businesses and affiliate links; 403 behind a bot challenge |
 | Webby Awards winners, Made with Vue.js, Made with React, Made with Laravel, Klim In Use | not adapted: client-rendered; mostly apps and side projects; mostly print work |
 | Cofolios, Bestfolios | not adapted: client-rendered |
+| Barba.js showcase | not adapted: read from Firestore behind an encrypted client key |
+| Wix Studio inspiration | not adapted: no site links in the served HTML |
+| Design Made in Germany | not adapted: a design blog and agency directory, not a site gallery |
 | Elementor and Bricks showcases | not adapted: no site links in the served HTML |
 | October CMS, Grav, Jamstack, Neos, TYPO3, Umbraco showcases | not adapted: 404 |
 | Brave Search | working; skipped with a notice when `BRAVE_API_KEY` is unset |
