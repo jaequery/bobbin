@@ -34,8 +34,11 @@
 // showcase (now redirects to the home page, whose few links are agency case studies),
 // ProcessWire sites directory, Readymag examples and Remix showcase (no site links in
 // the served HTML), Hugo, Payload, Storyblok, DatoCMS, Directus and Svelte showcases (404),
-// Prismic showcase (about a dozen sites), Elementor and Bricks showcases (no site links
-// in the served HTML), October CMS, Grav, Jamstack, Neos, TYPO3 and Umbraco showcases (404).
+// Prismic showcase and Ghost Explore (only a handful of sites in the served HTML),
+// Site Builder Report inspiration (mostly small businesses, many affiliate links),
+// Codrops inspiration roundups (403 behind a bot challenge), Elementor and Bricks
+// showcases (no site links in the served HTML), October CMS, Grav, Jamstack, Neos,
+// TYPO3 and Umbraco showcases (404).
 import * as awwwards from "./awwwards.js";
 import * as cssdesignawards from "./cssdesignawards.js";
 import * as refero from "./refero.js";
@@ -86,6 +89,7 @@ import * as lenis from "./lenis.js";
 import * as kirby from "./kirby.js";
 import * as wordpress from "./wordpress.js";
 import * as statamic from "./statamic.js";
+import * as muuuuu from "./muuuuu.js";
 import * as wagtail from "./wagtail.js";
 
-export const GALLERIES = [awwwards, cssdesignawards, refero, onepagelove, curated, httpster, cssnectar, minimalGallery, darkmodedesign, siteofsites, admiretheweb, bestwebsitegallery, typewolf, hoverstates, siiimple, landinglove, ecommdesign, brutalistwebsites, footerdesign, mindsparklemag, deadsimplesites, landingfolio, csswinner, navbargallery, designnominees, semplice, webdesignclip, csslight, details, saaspages, saaslandingpage, sitesee, landinggallery, cssline, orpetron, unmatchedstyle, a1gallery, seesaw, landingsdev, pricingpages, typio, fourohfours, killerportfolio, webinspoo, astro, nuxt, lenis, kirby, wordpress, statamic, wagtail];
+export const GALLERIES = [awwwards, cssdesignawards, refero, onepagelove, curated, httpster, cssnectar, minimalGallery, darkmodedesign, siteofsites, admiretheweb, bestwebsitegallery, typewolf, hoverstates, siiimple, landinglove, ecommdesign, brutalistwebsites, footerdesign, mindsparklemag, deadsimplesites, landingfolio, csswinner, navbargallery, designnominees, semplice, webdesignclip, csslight, details, saaspages, saaslandingpage, sitesee, landinggallery, cssline, orpetron, unmatchedstyle, a1gallery, seesaw, landingsdev, pricingpages, typio, fourohfours, killerportfolio, webinspoo, astro, nuxt, lenis, kirby, wordpress, statamic, muuuuu, wagtail];
