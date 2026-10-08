@@ -51,9 +51,18 @@ Landing Gallery, A1 Gallery, Landings, Webinspoo and the Gatsby showcase are rea
 Typewolf, SaaS Pages, Orpetron, Unmatched Style, See*Saw and Killer Portfolio skip the detail pages already stored
 as a site's source.
 
+Paged galleries (Awwwards, CSS Design Awards, One Page Love, Minimal Gallery,
+CSS Winner and the others read with `?page=` or `/page/<n>`) skip entries whose
+domain or detail page is already stored, so known entries use none of a run's
+reads. Each reads page 1 for new entries and then resumes at the page an earlier
+run reached, kept in the `gallery_cursors` table (`npm run db:migrate` adds it;
+without it they read from page 2). Every run reaches further into an archive,
+such as the roughly 7,400 Awwwards Sites of the Day, instead of re-reading its
+first pages.
+
 | Adapter | Status |
 | --- | --- |
-| Awwwards (Sites of the Day) | working |
+| Awwwards (Sites of the Day) | working, resumes at the page the last run reached |
 | CSS Design Awards (website gallery) | working |
 | Refero Styles | working, one style page fetched per new site |
 | One Page Love | working, genre mapped to industry |
@@ -103,6 +112,8 @@ as a site's source.
 | Lenis showcase | working, read from its sitemap newest first, one page fetched per new site, partner promos skipped |
 | Made with Kirby | working, read from its RSS feed newest first, items link straight to the site |
 | WordPress Showcase | working, read from its WordPress API newest first, two requests for the whole gallery, categories and tags mapped to industry |
+| Statamic Showcase | working, paged with ?page=, one page fetched per new site |
+| MUUUUU.ORG | working, paged with /page/<n>, cards link straight to the site, industry mapped from the detail path |
 | Godly | not adapted: redirects to recent.design, a client-rendered app |
 | The FWA | not adapted: client-rendered |
 | Land-book, Lapa Ninja, Web Design Inspiration, Saaspo, Maxibestof | not adapted: 403 behind a bot challenge |
@@ -137,6 +148,10 @@ as a site's source.
 | Shopify examples, Tailwind CSS showcase | not adapted: a handful of stores; client-rendered |
 | Three.js showcase, Sanity showcase, Strapi showcases | not adapted: mostly WebGL demos, games and experiments; robots.txt disallows /showcase; mostly small local businesses |
 | Craft CMS showcase | not adapted: now redirects to the home page, whose few links are mostly agency case studies |
+| ProcessWire sites, Readymag examples, Remix showcase | not adapted: no site links in the served HTML |
+| Hugo, Payload, Storyblok, DatoCMS, Directus, Svelte showcases | not adapted: 404 |
+| Prismic showcase, Ghost Explore, Site Builder Report, Codrops roundups | not adapted: only a handful of sites in the served HTML; mostly small businesses and affiliate links; 403 behind a bot challenge |
+| Webby Awards winners, Made with Vue.js, Made with React, Made with Laravel, Klim In Use | not adapted: client-rendered; mostly apps and side projects; mostly print work |
 | Brave Search | working; skipped with a notice when `BRAVE_API_KEY` is unset |
 
 ## Capture a site

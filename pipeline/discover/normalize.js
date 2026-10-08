@@ -18,7 +18,8 @@ export const BLOCKLIST = Object.freeze([
   "saaslandingpage.com", "sitesee.co", "landing.gallery", "cssline.com", "orpetron.com",
   "unmatchedstyle.com", "a1.gallery", "seesaw.website", "landings.dev",
   "pricingpages.design", "typ.io", "404s.design", "killerportfolio.com", "webinspoo.com",
-  "astro.build", "gatsbyjs.com", "nuxt.com", "lenis.dev", "getkirby.com", "wordpress.org",
+  "astro.build", "gatsbyjs.com", "nuxt.com", "lenis.dev", "getkirby.com", "wordpress.org", "statamic.com",
+  "muuuuu.org",
 ]);
 
 // Link shorteners and ad trackers whose real target is behind a redirect.
@@ -36,6 +37,13 @@ function parse(input) {
   } catch {
     return null;
   }
+}
+
+// The registrable domain `input` would be stored under, without resolving
+// redirects or checking the blocklist; null when it has none.
+export function candidateDomain(input) {
+  const u = parse(String(input).trim());
+  return u ? getDomain(u.hostname.replace(/\.$/, "").replace(/^www\./, ""), { allowPrivateDomains: true }) : null;
 }
 
 // Returns { url, domain } or { refused: reason }.
