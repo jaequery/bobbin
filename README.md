@@ -164,6 +164,8 @@ first pages.
 | wagtail.org showcase, Design Inspiration | not adapted: a few case studies (Made with Wagtail is its site list); product design, not websites |
 | Drupal case studies | not adapted: robots.txt asks a 10s crawl delay |
 | Cargo examples, Webflow, Builder.io, Concrete CMS, Contao showcases | not adapted: 404 |
+| Elementor and Bricks showcases | not adapted: no site links in the served HTML |
+| October CMS, Grav, Jamstack, Neos, TYPO3, Umbraco showcases | not adapted: 404 |
 | Brave Search | working; skipped with a notice when `BRAVE_API_KEY` is unset |
 
 ## Capture a site

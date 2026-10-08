@@ -46,7 +46,9 @@
 // Wagtail's own showcase (wagtail.org/showcase, a few case studies; Made with Wagtail is
 // its site list), Design Inspiration (design-inspiration.net, product design, not websites),
 // Drupal case studies (robots.txt asks a 10s crawl delay), Cargo examples and the Webflow,
-// Builder.io, Concrete CMS and Contao showcases (404).
+// Builder.io, Concrete CMS and Contao showcases (404), Elementor and Bricks showcases (no
+// site links in the served HTML), October CMS, Grav, Jamstack, Neos, TYPO3 and Umbraco
+// showcases (404).
 import * as awwwards from "./awwwards.js";
 import * as cssdesignawards from "./cssdesignawards.js";
 import * as refero from "./refero.js";
