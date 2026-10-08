@@ -112,6 +112,7 @@ first pages.
 | Made with Kirby | working, read from its RSS feed newest first, items link straight to the site |
 | WordPress Showcase | working, read from its WordPress API newest first, two requests for the whole gallery, categories and tags mapped to industry |
 | Statamic Showcase | working, paged with ?page=, one page fetched per new site |
+| MUUUUU.ORG | working, paged with /page/<n>, cards link straight to the site, industry mapped from the detail path |
 | Godly | not adapted: redirects to recent.design, a client-rendered app |
 | The FWA | not adapted: client-rendered |
 | Land-book, Lapa Ninja, Web Design Inspiration, Saaspo, Maxibestof | not adapted: 403 behind a bot challenge |
@@ -147,8 +148,8 @@ first pages.
 | Craft CMS showcase | not adapted: now redirects to the home page, whose few links are mostly agency case studies |
 | ProcessWire sites, Readymag examples, Remix showcase | not adapted: no site links in the served HTML |
 | Hugo, Payload, Storyblok, DatoCMS, Directus, Svelte showcases | not adapted: 404 |
-| Codrops Inspirational Websites Roundups, Webby Awards winners, Prismic showcase | not adapted: 403 behind a bot challenge; client-rendered; a handful of sites |
-| Made with Vue.js, Made with React, Made with Laravel, Klim In Use | not adapted: mostly apps and side projects; mostly print work |
+| Prismic showcase, Ghost Explore, Site Builder Report, Codrops roundups | not adapted: only a handful of sites in the served HTML; mostly small businesses and affiliate links; 403 behind a bot challenge |
+| Webby Awards winners, Made with Vue.js, Made with React, Made with Laravel, Klim In Use | not adapted: client-rendered; mostly apps and side projects; mostly print work |
 | Brave Search | working; skipped with a notice when `BRAVE_API_KEY` is unset |
 
 ## Capture a site
