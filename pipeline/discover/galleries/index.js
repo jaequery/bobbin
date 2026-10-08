@@ -33,10 +33,11 @@
 // disallows /showcase), Strapi showcases (mostly small local businesses), Craft CMS
 // showcase (now redirects to the home page, whose few links are agency case studies),
 // ProcessWire sites directory, Readymag examples and Remix showcase (no site links in
-// the served HTML), Hugo, Payload, Storyblok, DatoCMS, Directus and Svelte showcases (404), Barba.js showcase (read from Firestore
-behind an encrypted client key), Webby Awards winners (client-rendered, robots.txt
-disallows its /api/), Wix Studio inspiration (no site links in the served HTML),
-Design Made in Germany (a design blog and agency directory, not a site gallery).
+// the served HTML), Hugo, Payload, Storyblok, DatoCMS, Directus and Svelte showcases (404),
+// Barba.js showcase (read from Firestore behind an encrypted client key), Webby Awards
+// winners (client-rendered, robots.txt disallows its /api/), Wix Studio inspiration (no
+// site links in the served HTML), Design Made in Germany (a design blog and agency
+// directory, not a site gallery).
 import * as awwwards from "./awwwards.js";
 import * as cssdesignawards from "./cssdesignawards.js";
 import * as refero from "./refero.js";
