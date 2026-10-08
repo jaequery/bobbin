@@ -122,7 +122,9 @@ export async function runPipeline(options = {}, { signal } = {}) {
 
   // Resume: sites a crashed run left in a transient status become claimable again.
   for (const r of await resetStaleClaims(new Date(Date.now() - STALE_MS).toISOString())) {
-    log(`resume ${r.domain} -> ${r.status}`, { event: "reset", domain: r.domain, status: r.status });
+    const crashed = r.last_error === "crashed";
+    log(`resume ${r.domain} -> ${r.status}${crashed ? " (crashed 3 times, giving up)" : ""}`, { event: "reset", domain: r.domain, status: r.status });
+    if (crashed) await recordEvent(r.id, "capture_failed", { code: "crashed", message: "the run died while capturing this site 3 times", run: runId });
   }
   if (opts.retryFailed) {
     const rows = await requeueFailed(MAX_ATTEMPTS);
