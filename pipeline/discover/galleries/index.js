@@ -36,11 +36,11 @@
 // the served HTML), Hugo, Payload, Storyblok, DatoCMS, Directus and Svelte showcases (404),
 // Prismic showcase and Ghost Explore (only a handful of sites in the served HTML),
 // Site Builder Report inspiration (mostly small businesses, many affiliate links),
-// Codrops inspiration roundups (403 behind a bot challenge),
-// Barba.js showcase (read from Firestore behind an encrypted client key), Webby Awards
-// winners (client-rendered, robots.txt disallows its /api/), Wix Studio inspiration (no
-// site links in the served HTML), Design Made in Germany (a design blog and agency
-// directory, not a site gallery).
+// Codrops inspiration roundups (403 behind a bot challenge), Webby Awards winners
+// (client-rendered), Made with Vue.js, React and Laravel (mostly apps and side
+// projects), Klim's In Use (mostly print), Barba.js showcase (read from Firestore behind an
+// encrypted client key), Wix Studio inspiration (no site links in the served HTML),
+// Design Made in Germany (a design blog and agency directory, not a site gallery).
 import * as awwwards from "./awwwards.js";
 import * as cssdesignawards from "./cssdesignawards.js";
 import * as refero from "./refero.js";
@@ -92,6 +92,7 @@ import * as kirby from "./kirby.js";
 import * as wordpress from "./wordpress.js";
 import * as statamic from "./statamic.js";
 import * as muuuuu from "./muuuuu.js";
+import * as awwwardshonorable from "./awwwardshonorable.js";
 import * as osmo from "./osmo.js";
 
-export const GALLERIES = [awwwards, cssdesignawards, refero, onepagelove, curated, httpster, cssnectar, minimalGallery, darkmodedesign, siteofsites, admiretheweb, bestwebsitegallery, typewolf, hoverstates, siiimple, landinglove, ecommdesign, brutalistwebsites, footerdesign, mindsparklemag, deadsimplesites, landingfolio, csswinner, navbargallery, designnominees, semplice, webdesignclip, csslight, details, saaspages, saaslandingpage, sitesee, landinggallery, cssline, orpetron, unmatchedstyle, a1gallery, seesaw, landingsdev, pricingpages, typio, fourohfours, killerportfolio, webinspoo, astro, nuxt, lenis, kirby, wordpress, statamic, muuuuu, osmo];
+export const GALLERIES = [awwwards, cssdesignawards, refero, onepagelove, curated, httpster, cssnectar, minimalGallery, darkmodedesign, siteofsites, admiretheweb, bestwebsitegallery, typewolf, hoverstates, siiimple, landinglove, ecommdesign, brutalistwebsites, footerdesign, mindsparklemag, deadsimplesites, landingfolio, csswinner, navbargallery, designnominees, semplice, webdesignclip, csslight, details, saaspages, saaslandingpage, sitesee, landinggallery, cssline, orpetron, unmatchedstyle, a1gallery, seesaw, landingsdev, pricingpages, typio, fourohfours, killerportfolio, webinspoo, astro, nuxt, lenis, kirby, wordpress, statamic, muuuuu, awwwardshonorable, osmo];
