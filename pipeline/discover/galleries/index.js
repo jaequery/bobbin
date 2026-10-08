@@ -39,7 +39,9 @@
 // Codrops inspiration roundups (403 behind a bot challenge), Webby Awards winners
 // (client-rendered), Made with Vue.js, React and Laravel (mostly apps and side
 // projects), Klim's In Use (mostly print),
-// Cofolios and Bestfolios (client-rendered),
+// Cofolios and Bestfolios (client-rendered), Barba.js showcase (read from Firestore
+// behind an encrypted client key), Wix Studio inspiration (no site links in the served
+// HTML), Design Made in Germany (a design blog and agency directory, not a site gallery),
 // Drupal case studies (robots.txt asks a 10s crawl delay), Cargo examples and the Webflow,
 // Builder.io, Concrete CMS and Contao showcases (404).
 import * as awwwards from "./awwwards.js";
@@ -95,6 +97,7 @@ import * as statamic from "./statamic.js";
 import * as muuuuu from "./muuuuu.js";
 import * as awwwardshonorable from "./awwwardshonorable.js";
 import * as wallofportfolios from "./wallofportfolios.js";
+import * as osmo from "./osmo.js";
 import * as darkdesign from "./darkdesign.js";
 
-export const GALLERIES = [awwwards, cssdesignawards, refero, onepagelove, curated, httpster, cssnectar, minimalGallery, darkmodedesign, siteofsites, admiretheweb, bestwebsitegallery, typewolf, hoverstates, siiimple, landinglove, ecommdesign, brutalistwebsites, footerdesign, mindsparklemag, deadsimplesites, landingfolio, csswinner, navbargallery, designnominees, semplice, webdesignclip, csslight, details, saaspages, saaslandingpage, sitesee, landinggallery, cssline, orpetron, unmatchedstyle, a1gallery, seesaw, landingsdev, pricingpages, typio, fourohfours, killerportfolio, webinspoo, astro, nuxt, lenis, kirby, wordpress, statamic, muuuuu, awwwardshonorable, wallofportfolios, darkdesign];
+export const GALLERIES = [awwwards, cssdesignawards, refero, onepagelove, curated, httpster, cssnectar, minimalGallery, darkmodedesign, siteofsites, admiretheweb, bestwebsitegallery, typewolf, hoverstates, siiimple, landinglove, ecommdesign, brutalistwebsites, footerdesign, mindsparklemag, deadsimplesites, landingfolio, csswinner, navbargallery, designnominees, semplice, webdesignclip, csslight, details, saaspages, saaslandingpage, sitesee, landinggallery, cssline, orpetron, unmatchedstyle, a1gallery, seesaw, landingsdev, pricingpages, typio, fourohfours, killerportfolio, webinspoo, astro, nuxt, lenis, kirby, wordpress, statamic, muuuuu, awwwardshonorable, wallofportfolios, osmo, darkdesign];
