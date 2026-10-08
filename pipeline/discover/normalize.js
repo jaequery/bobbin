@@ -18,7 +18,7 @@ export const BLOCKLIST = Object.freeze([
   "saaslandingpage.com", "sitesee.co", "landing.gallery", "cssline.com", "orpetron.com",
   "unmatchedstyle.com", "a1.gallery", "seesaw.website", "landings.dev",
   "pricingpages.design", "typ.io", "404s.design", "killerportfolio.com", "webinspoo.com",
-  "astro.build", "wallofportfolios.in",
+  "astro.build", "nuxt.com", "wallofportfolios.in",
 ]);
 
 // Link shorteners and ad trackers whose real target is behind a redirect.
