@@ -1,7 +1,9 @@
 // Page prep before a screenshot: load, clear consent banners and chat widgets,
 // trigger lazy images, wait for fonts and the network to settle.
 
-export const MAX_HEIGHT = 12000; // css px; taller pages are clipped
+// css px; taller pages are clipped. Lower on Vercel, where a function has at
+// most 3 GB and a full-page shot of a 12000px page at 2x ran it out of memory.
+export const MAX_HEIGHT = process.env.VERCEL ? 6000 : 12000;
 
 const CONSENT_BUTTONS = [
   "#onetrust-accept-btn-handler",

@@ -23,6 +23,13 @@ import { assertAllowed, OptedOut } from "./robots.js";
 export { closeBrowser };
 
 const MAX_ATTEMPTS = 3;
+
+// On Vercel every MB counts (3 GB for Chromium, Next and the images): no libvips
+// operation cache and one libvips thread, so decoded images are freed at once.
+if (process.env.VERCEL) {
+  sharp.cache(false);
+  sharp.concurrency(1);
+}
 const POLITE_MS = 1000;
 // Hard ceiling for loading and shooting one page at one viewport. Some steps
 // (page scripts, font loading) have no timeout of their own and can hang on a
