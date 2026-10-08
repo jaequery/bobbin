@@ -100,6 +100,7 @@ as a site's source.
 | Astro showcase | working, cards link straight to the site |
 | Nuxt showcase | working, one page lists every site, cards link straight to the site |
 | Lenis showcase | working, read from its sitemap newest first, one page fetched per new site, partner promos skipped |
+| Made with Kirby | working, read from its RSS feed newest first, items link straight to the site |
 | Godly | not adapted: redirects to recent.design, a client-rendered app |
 | The FWA | not adapted: client-rendered |
 | Land-book, Lapa Ninja, Web Design Inspiration, Saaspo, Maxibestof | not adapted: 403 behind a bot challenge |
