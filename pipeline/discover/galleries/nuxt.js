@@ -1,24 +1,20 @@
-// Nuxt's showcase (nuxt.com/showcase), well-known sites built with Nuxt that
-// its team picks, from Louis Vuitton to NASA's JPL. One page lists them all;
-// every card links straight out to the site, with no detail page, so the
-// listing page is the source. Its sites span every industry.
-import { paged } from "./paged.js";
+// Nuxt's showcase (nuxt.com/showcase), sites built with Nuxt that its team picks,
+// mostly large brands. One page lists every site; each card links straight out
+// to the site, with no detail page, and its screenshot's alt text names it. Its
+// sites span every industry.
+import * as cheerio from "cheerio";
+import { fetchHtml } from "../http.js";
 
-const BASE = "https://nuxt.com";
+const PAGE = "https://nuxt.com/showcase";
 
 export const name = "nuxt";
 
-export function listing({ limit }) {
-  return paged({
-    name,
-    limit,
-    maxPages: 1,
-    pageUrl: () => `${BASE}/showcase`,
-    parse: ($, pageUrl) =>
-      $("a[aria-label='Card link'][href^='http']").map((_, el) => {
-        const card = $(el);
-        const label = card.parent().find("p").first().text().trim();
-        return { url: card.attr("href"), name: label || null, sourceRef: pageUrl };
-      }).get(),
-  });
+export async function* listing({ limit }) {
+  const $ = cheerio.load(await fetchHtml(PAGE));
+  const entries = $("a[href^='http'][aria-label='Card link']").map((_, el) => {
+    const card = $(el);
+    return { url: card.attr("href"), name: card.parent().find("img[alt]").first().attr("alt")?.trim() || null, sourceRef: PAGE };
+  }).get();
+  if (!entries.length) console.warn(`[${name}] no entries on ${PAGE}; the gallery markup may have changed`);
+  yield* entries.slice(0, limit);
 }

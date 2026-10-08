@@ -28,7 +28,8 @@
 // (an agency site, not a gallery), One Page Mania (now redirects to an agency site),
 // startups.gallery (a startup and jobs directory), Next.js showcase (a handful of sites),
 // Design Inspiration (design-inspiration.net, industrial and product design, not
-// websites), Readymag showcase (the page is gone).
+// websites), Readymag showcase (the page is gone),
+// Shopify examples (a handful of stores), Tailwind CSS showcase (client-rendered).
 import * as awwwards from "./awwwards.js";
 import * as cssdesignawards from "./cssdesignawards.js";
 import * as refero from "./refero.js";
