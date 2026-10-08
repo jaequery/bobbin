@@ -114,6 +114,7 @@ first pages.
 | WordPress Showcase | working, read from its WordPress API newest first, two requests for the whole gallery, categories and tags mapped to industry |
 | Statamic Showcase | working, paged with ?page=, one page fetched per new site |
 | MUUUUU.ORG | working, paged with /page/<n>, cards link straight to the site, industry mapped from the detail path |
+| Awwwards (Honorable Mentions) | working, same card markup as Sites of the Day |
 | Godly | not adapted: redirects to recent.design, a client-rendered app |
 | The FWA | not adapted: client-rendered |
 | Land-book, Lapa Ninja, Web Design Inspiration, Saaspo, Maxibestof | not adapted: 403 behind a bot challenge |

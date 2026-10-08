@@ -6,22 +6,25 @@ const BASE = "https://www.awwwards.com";
 
 export const name = "awwwards";
 
+// Shared with the Honorable Mentions adapter, whose cards use the same markup.
+export const parseCards = ($) =>
+  $(".card-site").map((_, el) => {
+    const card = $(el);
+    const url = card.find("a.figure-rollover__bt[href^='http']").attr("href");
+    const detail = card.find("a.figure-rollover__link").attr("href");
+    if (!url || !detail) return null;
+    return {
+      url,
+      name: card.find("a.figure-rollover__link").attr("aria-label") || null,
+      sourceRef: new URL(detail, BASE).href,
+    };
+  }).get();
+
 export function listing({ limit }) {
   return paged({
     name,
     limit,
     pageUrl: (n) => `${BASE}/websites/sites_of_the_day/${n > 1 ? `?page=${n}` : ""}`,
-    parse: ($) =>
-      $(".card-site").map((_, el) => {
-        const card = $(el);
-        const url = card.find("a.figure-rollover__bt[href^='http']").attr("href");
-        const detail = card.find("a.figure-rollover__link").attr("href");
-        if (!url || !detail) return null;
-        return {
-          url,
-          name: card.find("a.figure-rollover__link").attr("aria-label") || null,
-          sourceRef: new URL(detail, BASE).href,
-        };
-      }).get(),
+    parse: parseCards,
   });
 }
