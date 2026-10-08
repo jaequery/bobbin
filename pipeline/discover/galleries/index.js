@@ -33,7 +33,9 @@
 // disallows /showcase), Strapi showcases (mostly small local businesses), Craft CMS
 // showcase (now redirects to the home page, whose few links are agency case studies),
 // ProcessWire sites directory, Readymag examples and Remix showcase (no site links in
-// the served HTML), Hugo, Payload, Storyblok, DatoCMS, Directus and Svelte showcases (404).
+// the served HTML), Hugo, Payload, Storyblok, DatoCMS, Directus and Svelte showcases (404),
+// Wagtail's own showcase (wagtail.org/showcase, a few case studies; Made with Wagtail is
+// its site list), Design Inspiration (design-inspiration.net, product design, not websites).
 import * as awwwards from "./awwwards.js";
 import * as cssdesignawards from "./cssdesignawards.js";
 import * as refero from "./refero.js";
@@ -84,5 +86,6 @@ import * as lenis from "./lenis.js";
 import * as kirby from "./kirby.js";
 import * as wordpress from "./wordpress.js";
 import * as statamic from "./statamic.js";
+import * as wagtail from "./wagtail.js";
 
-export const GALLERIES = [awwwards, cssdesignawards, refero, onepagelove, curated, httpster, cssnectar, minimalGallery, darkmodedesign, siteofsites, admiretheweb, bestwebsitegallery, typewolf, hoverstates, siiimple, landinglove, ecommdesign, brutalistwebsites, footerdesign, mindsparklemag, deadsimplesites, landingfolio, csswinner, navbargallery, designnominees, semplice, webdesignclip, csslight, details, saaspages, saaslandingpage, sitesee, landinggallery, cssline, orpetron, unmatchedstyle, a1gallery, seesaw, landingsdev, pricingpages, typio, fourohfours, killerportfolio, webinspoo, astro, nuxt, lenis, kirby, wordpress, statamic];
+export const GALLERIES = [awwwards, cssdesignawards, refero, onepagelove, curated, httpster, cssnectar, minimalGallery, darkmodedesign, siteofsites, admiretheweb, bestwebsitegallery, typewolf, hoverstates, siiimple, landinglove, ecommdesign, brutalistwebsites, footerdesign, mindsparklemag, deadsimplesites, landingfolio, csswinner, navbargallery, designnominees, semplice, webdesignclip, csslight, details, saaspages, saaslandingpage, sitesee, landinggallery, cssline, orpetron, unmatchedstyle, a1gallery, seesaw, landingsdev, pricingpages, typio, fourohfours, killerportfolio, webinspoo, astro, nuxt, lenis, kirby, wordpress, statamic, wagtail];
